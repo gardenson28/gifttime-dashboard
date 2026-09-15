@@ -55,6 +55,7 @@ export type TrendItem = {
   target: string;
   source: string;
   exactBudgetMatch?: boolean;
+  recency?: "classic" | "recent";
 };
 
 export type TrendResult = {

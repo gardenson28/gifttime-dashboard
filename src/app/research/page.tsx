@@ -167,6 +167,11 @@ export default function ResearchPage() {
                           <span className="font-semibold text-slate-800">{item.name}</span>
                           <Badge>{item.category}</Badge>
                           <Badge tone="amber">{item.priceRange}</Badge>
+                          {item.recency === "recent" ? (
+                            <Badge tone="green">최근 트렌드</Badge>
+                          ) : item.recency === "classic" ? (
+                            <Badge tone="default">스테디셀러</Badge>
+                          ) : null}
                           {item.exactBudgetMatch === false && (
                             <Badge tone="default">선택 예산대 근접 참고</Badge>
                           )}

@@ -5,8 +5,33 @@ import type { TrendItem } from "@/lib/types";
 
 type CuratedItem = Omit<TrendItem, "target" | "exactBudgetMatch">;
 
-const CURATED: Record<string, CuratedItem[]> = curatedData;
+const CURATED: Record<string, CuratedItem[]> = curatedData as Record<string, CuratedItem[]>;
 const MIN_RESULTS = 5;
+const CLASSIC_TARGET = 3;
+const RECENT_TARGET = 2;
+
+/**
+ * 예산대 관련도 순으로 정렬된 목록(ranked)에서 "전체 기간 스테디셀러(classic)" 3개 +
+ * "최근 트렌드(recent)" 2개를 우선 뽑고, 한쪽이 부족하면 남는 자리를 다른 쪽에서 채워
+ * 항상 최대 MIN_RESULTS개를 반환한다. 순서는 원래의 예산대 관련도 순서를 유지한다.
+ */
+function pickBalancedByRecency(ranked: CuratedItem[]): CuratedItem[] {
+  const classic = ranked.filter((i) => i.recency !== "recent");
+  const recent = ranked.filter((i) => i.recency === "recent");
+
+  const chosen = new Set<CuratedItem>();
+  classic.slice(0, CLASSIC_TARGET).forEach((i) => chosen.add(i));
+  recent.slice(0, RECENT_TARGET).forEach((i) => chosen.add(i));
+
+  if (chosen.size < MIN_RESULTS) {
+    for (const item of ranked) {
+      if (chosen.size >= MIN_RESULTS) break;
+      chosen.add(item);
+    }
+  }
+
+  return ranked.filter((i) => chosen.has(i));
+}
 
 const CATEGORY_KEYWORD_MAP: { category: string; keywords: string[] }[] = [
   { category: "식품", keywords: ["식품", "과일", "한우", "건강식품", "홍삼", "차", "커피", "음료", "육류", "먹거리"] },
@@ -115,8 +140,9 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const exactCount = isKnownBudget ? curatedItems.filter((i) => i.priceRange === budget).length : ranked.length;
-    const selected = isKnownBudget && exactCount < MIN_RESULTS ? ranked.slice(0, MIN_RESULTS) : ranked;
+    // 예산대를 지정한 경우, 스테디셀러 3개 + 최근 트렌드 2개 구성을 우선 시도하고
+    // 한쪽이 부족하면 다른 쪽으로 채워 최대 5개까지 보여준다.
+    const selected = isKnownBudget ? pickBalancedByRecency(ranked) : ranked;
 
     const items: TrendItem[] = selected.map((item) => ({
       ...item,

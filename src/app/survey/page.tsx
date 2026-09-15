@@ -38,6 +38,7 @@ export default function SurveyPage() {
   const [sourceLabel, setSourceLabel] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
+  const [hasRunThisVisit, setHasRunThisVisit] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const uploadedFileRef = useRef<File | null>(null);
 
@@ -73,6 +74,7 @@ export default function SurveyPage() {
         setSurveyData(sample, analysis);
         setSourceLabel(`전체 응답자 ${parsed.rows.length}명 중 무작위 ${sample.length}명 표본 분석`);
       }
+      setHasRunThisVisit(true);
     } catch {
       setError("설문 데이터를 분석하는 중 문제가 발생했습니다.");
     } finally {
@@ -80,7 +82,7 @@ export default function SurveyPage() {
     }
   }
 
-  const analysis = surveyAnalysis;
+  const analysis = hasRunThisVisit ? surveyAnalysis : null;
 
   return (
     <div className="space-y-6">
