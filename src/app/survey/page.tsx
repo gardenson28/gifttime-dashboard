@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRef, useState } from "react";
 import {
   Bar,
@@ -16,9 +17,8 @@ import {
 } from "recharts";
 import { analyzeSurvey } from "@/lib/analysis";
 import { parseSurveyCsv } from "@/lib/csv";
-import { Badge, Card, EmptyNotice, ErrorNotice, PrimaryButton, SecondaryButton, SectionTitle } from "@/components/ui";
+import { Badge, Card, EmptyNotice, ErrorNotice, PrimaryButton, SectionTitle } from "@/components/ui";
 import { useStore } from "@/lib/store";
-import type { SurveyRow } from "@/lib/types";
 
 const CHART_COLORS = ["#e11d48", "#f59e0b", "#0ea5e9", "#8b5cf6", "#22c55e", "#94a3b8"];
 const SAMPLE_SIZE = 100;
@@ -33,62 +33,53 @@ function sampleRandom<T>(rows: T[], size: number): T[] {
 }
 
 export default function SurveyPage() {
-  const { surveyRows, surveyAnalysis, setSurveyData } = useStore();
-  const [pendingRows, setPendingRows] = useState<SurveyRow[] | null>(null);
+  const { surveyAnalysis, setSurveyData } = useStore();
+  const [fileName, setFileName] = useState<string | null>(null);
   const [sourceLabel, setSourceLabel] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const uploadedFileRef = useRef<File | null>(null);
 
-  async function analyzeSampledData() {
+  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    uploadedFileRef.current = file;
+    setFileName(file.name);
+  }
+
+  async function runAnalysis() {
     setError(null);
     setAnalyzing(true);
     try {
-      const res = await fetch("/sample-survey.csv");
-      if (!res.ok) throw new Error("샘플 데이터를 불러오지 못했습니다.");
-      const text = await res.text();
-      const parsed = parseSurveyCsv(text);
-      const sample = sampleRandom(parsed.rows, SAMPLE_SIZE);
-      const analysis = analyzeSurvey(sample);
-      setSurveyData(sample, analysis);
-      setPendingRows(null);
-      setSourceLabel(`전체 응답자 ${parsed.rows.length}명 중 무작위 ${sample.length}명 표본 분석`);
+      const file = uploadedFileRef.current;
+      if (file) {
+        const text = await file.text();
+        const parsed = parseSurveyCsv(text);
+        if (parsed.rows.length === 0) {
+          setError("업로드한 파일에서 데이터를 찾을 수 없습니다. 헤더 행이 있는 CSV 형식인지 확인해주세요.");
+          return;
+        }
+        const analysis = analyzeSurvey(parsed.rows);
+        setSurveyData(parsed.rows, analysis);
+        setSourceLabel(`업로드 파일: ${file.name} (${parsed.rows.length}명)`);
+      } else {
+        const res = await fetch("/sample-survey.csv");
+        if (!res.ok) throw new Error("샘플 데이터를 불러오지 못했습니다.");
+        const text = await res.text();
+        const parsed = parseSurveyCsv(text);
+        const sample = sampleRandom(parsed.rows, SAMPLE_SIZE);
+        const analysis = analyzeSurvey(sample);
+        setSurveyData(sample, analysis);
+        setSourceLabel(`전체 응답자 ${parsed.rows.length}명 중 무작위 ${sample.length}명 표본 분석`);
+      }
     } catch {
-      setError("샘플 설문 데이터를 불러오는 중 문제가 발생했습니다.");
+      setError("설문 데이터를 분석하는 중 문제가 발생했습니다.");
     } finally {
       setAnalyzing(false);
     }
   }
 
-  function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    setError(null);
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        const text = String(reader.result ?? "");
-        const parsed = parseSurveyCsv(text);
-        if (parsed.rows.length === 0) {
-          setError("업로드한 CSV에서 데이터를 찾을 수 없습니다. 헤더 행이 있는지 확인해주세요.");
-          return;
-        }
-        setPendingRows(parsed.rows);
-        setSourceLabel(`업로드 파일: ${file.name} (${parsed.rows.length}명)`);
-      } catch {
-        setError("CSV 파일을 읽는 중 문제가 발생했습니다. 형식을 확인해주세요.");
-      }
-    };
-    reader.readAsText(file, "utf-8");
-  }
-
-  function runAnalysis() {
-    if (!pendingRows) return;
-    const analysis = analyzeSurvey(pendingRows);
-    setSurveyData(pendingRows, analysis);
-  }
-
-  const previewRows = (pendingRows ?? surveyRows).slice(0, 10);
   const analysis = surveyAnalysis;
 
   return (
@@ -96,65 +87,38 @@ export default function SurveyPage() {
       <div>
         <h1 className="text-2xl font-bold text-slate-900">임직원 선호도 설문 분석</h1>
         <p className="mt-1 text-sm text-slate-500">
-          더미 데이터를 불러오거나 직접 CSV를 업로드해 선호 카테고리·연령대·부서·자유서술 답변을 분석합니다.
+          설문 데이터 파일을 업로드하고 분석을 실행하면 선호 카테고리·연령대·부서·자유서술 답변 분석 결과를 볼 수 있습니다.
         </p>
       </div>
 
       <Card>
-        <SectionTitle
-          title="1. 데이터 준비"
-          subtitle="더미 설문 500명 중 무작위 100명을 뽑아 바로 분석하거나, 직접 수집한 CSV 파일을 업로드할 수 있습니다."
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          className="flex w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center transition hover:border-rose-400 hover:bg-rose-50/40"
+        >
+          <span className="text-3xl">📄</span>
+          <span className="text-sm font-semibold text-slate-700">
+            {fileName ?? "설문 데이터 파일을 업로드하세요 (Excel/CSV)"}
+          </span>
+          <span className="text-xs text-slate-400">클릭해서 파일 선택 · 응답자ID, 연령대, 부서, 선호카테고리, 선호예산대, 자유서술답변, 만족도 컬럼 지원</span>
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".csv,.xlsx,.xls"
+          className="hidden"
+          onChange={handleFileSelect}
         />
-        <div className="flex flex-wrap gap-3">
-          <PrimaryButton onClick={analyzeSampledData} disabled={analyzing}>
+
+        <div className="mt-4 flex justify-center">
+          <PrimaryButton onClick={runAnalysis} disabled={analyzing}>
             {analyzing ? "분석 중..." : "설문 분석하기"}
           </PrimaryButton>
-          <SecondaryButton onClick={() => fileInputRef.current?.click()}>CSV 파일 업로드</SecondaryButton>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".csv"
-            className="hidden"
-            onChange={handleFileUpload}
-          />
         </div>
-        {sourceLabel && <p className="mt-3 text-sm text-slate-500">현재 데이터: {sourceLabel}</p>}
-        {error && <div className="mt-3"><ErrorNotice>{error}</ErrorNotice></div>}
-
-        {previewRows.length > 0 && (
-          <div className="mt-4 overflow-x-auto">
-            <table className="w-full min-w-[600px] text-left text-xs">
-              <thead className="text-slate-500">
-                <tr>
-                  <th className="pb-2 pr-3">응답자ID</th>
-                  <th className="pb-2 pr-3">연령대</th>
-                  <th className="pb-2 pr-3">부서</th>
-                  <th className="pb-2 pr-3">선호카테고리</th>
-                  <th className="pb-2 pr-3">선호예산대</th>
-                  <th className="pb-2 pr-3">만족도</th>
-                  <th className="pb-2">자유서술답변</th>
-                </tr>
-              </thead>
-              <tbody>
-                {previewRows.map((row, idx) => (
-                  <tr key={idx} className="border-t border-slate-100 text-slate-700">
-                    <td className="py-1.5 pr-3">{row.respondentId}</td>
-                    <td className="py-1.5 pr-3">{row.ageGroup ?? "-"}</td>
-                    <td className="py-1.5 pr-3">{row.department ?? "-"}</td>
-                    <td className="py-1.5 pr-3">{row.category ?? "-"}</td>
-                    <td className="py-1.5 pr-3">{row.budget ?? "-"}</td>
-                    <td className="py-1.5 pr-3">{row.satisfaction ?? "-"}</td>
-                    <td className="py-1.5 max-w-xs truncate">{row.comment ?? "-"}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {pendingRows && (
-          <div className="mt-4">
-            <PrimaryButton onClick={runAnalysis}>분석 실행</PrimaryButton>
+        {error && (
+          <div className="mt-3">
+            <ErrorNotice>{error}</ErrorNotice>
           </div>
         )}
       </Card>
@@ -257,7 +221,16 @@ export default function SurveyPage() {
           <Card className="bg-rose-50/60">
             <SectionTitle title="분석 요약" />
             <p className="text-sm leading-relaxed text-slate-700">{analysis.summary}</p>
+            {sourceLabel && <p className="mt-2 text-xs text-slate-400">데이터 출처: {sourceLabel}</p>}
           </Card>
+
+          <div className="flex justify-center">
+            <Link href="/recommend">
+              <PrimaryButton className="bg-emerald-600 hover:bg-emerald-700">
+                이 분석으로 매칭 추천 보기 →
+              </PrimaryButton>
+            </Link>
+          </div>
         </>
       )}
     </div>

@@ -54,6 +54,7 @@ export type TrendItem = {
   reason: string;
   target: string;
   source: string;
+  exactBudgetMatch?: boolean;
 };
 
 export type TrendResult = {

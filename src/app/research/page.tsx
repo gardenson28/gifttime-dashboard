@@ -1,9 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { BUDGET_OPTIONS, CATEGORY_OPTIONS, SEASON_OPTIONS } from "@/lib/constants";
+import { BUDGET_OPTIONS, CATEGORY_ICON, CATEGORY_OPTIONS, SEASON_OPTIONS } from "@/lib/constants";
 import { Badge, Card, EmptyNotice, ErrorNotice, PrimaryButton, SecondaryButton, SectionTitle } from "@/components/ui";
 import { useStore } from "@/lib/store";
+import { fetchTrendResearch } from "@/lib/trendApi";
 import type { TrendItem } from "@/lib/types";
 
 export default function ResearchPage() {
@@ -28,26 +29,16 @@ export default function ResearchPage() {
     }
     setError(null);
     setLoading(true);
-    try {
-      const res = await fetch("/api/trend-search", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ season: effectiveSeason, budget: effectiveBudget || undefined }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error ?? "검색 중 알 수 없는 오류가 발생했습니다.");
-        setTrendResult(null);
-        return;
-      }
+    const result = await fetchTrendResearch(effectiveSeason, effectiveBudget || undefined);
+    if (!result.ok) {
+      setError(result.error);
+      setTrendResult(null);
+    } else {
       setSeason(effectiveSeason);
       setBudget(effectiveBudget || "");
-      setTrendResult(data);
-    } catch {
-      setError("검색 요청을 보내지 못했습니다. 네트워크 상태를 확인해주세요.");
-    } finally {
-      setLoading(false);
+      setTrendResult(result.data);
     }
+    setLoading(false);
   }
 
   const filteredItems: TrendItem[] = useMemo(() => {
@@ -166,12 +157,19 @@ export default function ResearchPage() {
                 const saved = savedCandidates.includes(item.name);
                 return (
                   <li key={idx} className="rounded-lg border border-slate-200 p-4">
-                    <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="flex flex-wrap items-start gap-3">
+                      <div className="flex h-14 w-14 flex-none items-center justify-center rounded-lg bg-slate-100 text-2xl">
+                        {CATEGORY_ICON[item.category] ?? "🎁"}
+                      </div>
+                      <div className="flex min-w-0 flex-1 flex-wrap items-start justify-between gap-3">
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="font-semibold text-slate-800">{item.name}</span>
                           <Badge>{item.category}</Badge>
                           <Badge tone="amber">{item.priceRange}</Badge>
+                          {item.exactBudgetMatch === false && (
+                            <Badge tone="default">선택 예산대 근접 참고</Badge>
+                          )}
                         </div>
                         <p className="mt-2 text-sm text-slate-600">{item.reason}</p>
                         <a
@@ -188,6 +186,7 @@ export default function ResearchPage() {
                       >
                         {saved ? "저장됨 ✓" : "추천 후보로 저장"}
                       </SecondaryButton>
+                      </div>
                     </div>
                   </li>
                 );

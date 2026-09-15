@@ -4,31 +4,41 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { BUDGET_OPTIONS, SEASON_OPTIONS } from "@/lib/constants";
-import { Badge, Card, PrimaryButton, SectionTitle } from "@/components/ui";
+import { Badge, Card, ErrorNotice, PrimaryButton, SectionTitle } from "@/components/ui";
 import { useStore } from "@/lib/store";
+import { fetchTrendResearch } from "@/lib/trendApi";
 
 export default function Home() {
-  const { season, budget, setSeason, setBudget, trendResult, surveyAnalysis } = useStore();
+  const { season, budget, setSeason, setBudget, trendResult, setTrendResult, surveyAnalysis } = useStore();
   const [localSeason, setLocalSeason] = useState(season || SEASON_OPTIONS[1]);
   const [localBudget, setLocalBudget] = useState(budget || BUDGET_OPTIONS[2]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  function goToResearch() {
+  async function goToResearch() {
+    setError(null);
+    setLoading(true);
+    const result = await fetchTrendResearch(localSeason, localBudget || undefined);
+    setLoading(false);
+    if (!result.ok) {
+      setError(result.error);
+      return;
+    }
     setSeason(localSeason);
     setBudget(localBudget);
+    setTrendResult(result.data);
     router.push("/research");
   }
 
   return (
     <div className="space-y-8">
       <div>
-        <p className="text-sm font-semibold text-rose-600">감동타임 운영팀 · 포트폴리오 데모</p>
         <h1 className="mt-1 text-3xl font-bold text-slate-900">
           시즌·이벤트 기반 기업 선물 트렌드 리서치 & 임직원 선호도 분석 대시보드
         </h1>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-600">
-          시즌·예산을 선택해 실제 웹 검색 기반 선물 트렌드를 조사하고, 임직원 설문 데이터를 분석해
-          고객사에 제안할 선물군과 그 근거를 자동으로 정리합니다.
+          시즌·예산을 선택해 실제 웹 검색 기반 선물 트렌드를 조사하고, 임직원 설문 데이터를 분석해 고객사에 제안할 선물군과 그 근거를 자동으로 정리합니다.
         </p>
       </div>
 
@@ -65,14 +75,18 @@ export default function Home() {
           </div>
         </div>
         <div className="mt-5 flex flex-wrap gap-3">
-          <PrimaryButton onClick={goToResearch}>트렌드 리서치 시작</PrimaryButton>
+          <PrimaryButton onClick={goToResearch} disabled={loading}>
+            {loading ? "조회 중..." : "트렌드 리서치 시작"}
+          </PrimaryButton>
           <Link href="/survey">
             <PrimaryButton className="bg-slate-800 hover:bg-slate-900">설문 분석 시작</PrimaryButton>
           </Link>
-          <Link href="/recommend">
-            <PrimaryButton className="bg-emerald-600 hover:bg-emerald-700">매칭 추천 결과 바로가기</PrimaryButton>
-          </Link>
         </div>
+        {error && (
+          <div className="mt-3">
+            <ErrorNotice>{error}</ErrorNotice>
+          </div>
+        )}
       </Card>
 
       <div className="grid gap-4 sm:grid-cols-2">

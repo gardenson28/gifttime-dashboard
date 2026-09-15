@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "감동타임 선물 트렌드 대시보드",
+  title: "선물 트렌드 분석",
   description: "시즌·이벤트 기반 기업 선물 트렌드 리서치 및 임직원 선호도 분석 대시보드",
 };
 
@@ -23,7 +23,6 @@ const NAV_ITEMS = [
   { href: "/", label: "홈" },
   { href: "/research", label: "트렌드 리서치" },
   { href: "/survey", label: "설문 분석" },
-  { href: "/recommend", label: "매칭 추천" },
 ];
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -38,7 +37,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
               <Link href="/" className="flex items-center gap-2 font-bold text-slate-800">
                 <span className="text-lg">🎁</span>
-                <span>감동타임 선물 트렌드 대시보드</span>
+                <span>선물 트렌드 분석</span>
               </Link>
               <nav className="flex gap-1 text-sm">
                 {NAV_ITEMS.map((item) => (
@@ -55,7 +54,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           </header>
           <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">{children}</main>
           <footer className="border-t border-slate-200 py-4 text-center text-xs text-slate-400">
-            감동타임 선물 트렌드 대시보드 · 포트폴리오 데모 프로젝트 (가상 데이터 사용)
+            선물 트렌드 분석 · 포트폴리오 데모 프로젝트 (가상 데이터 사용)
           </footer>
         </StoreProvider>
       </body>

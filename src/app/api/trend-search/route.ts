@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import curatedData from "@/data/trend-research.json";
-import { BUDGET_CEILING, CATEGORY_SEASON_REASON } from "@/lib/constants";
+import { BUDGET_CEILING, BUDGET_OPTIONS, CATEGORY_SEASON_REASON } from "@/lib/constants";
 import type { TrendItem } from "@/lib/types";
 
-type CuratedItem = Omit<TrendItem, "target">;
+type CuratedItem = Omit<TrendItem, "target" | "exactBudgetMatch">;
 
 const CURATED: Record<string, CuratedItem[]> = curatedData;
+const MIN_RESULTS = 5;
 
 const CATEGORY_KEYWORD_MAP: { category: string; keywords: string[] }[] = [
   { category: "식품", keywords: ["식품", "과일", "한우", "건강식품", "홍삼", "차", "커피", "음료", "육류", "먹거리"] },
@@ -95,20 +96,38 @@ export async function POST(req: NextRequest) {
   const curatedItems = CURATED[season];
 
   if (curatedItems) {
-    // 예산대를 지정하면 그 예산대에 정확히 해당하는 아이템만 보여준다.
-    // budget이 미리 정의된 예산대(BUDGET_OPTIONS)와 정확히 일치하지 않으면(예: "직접 입력" 텍스트)
-    // 판단할 기준이 없으므로 필터링하지 않고 전체를 보여준다.
+    // 예산대를 지정하면 그 예산대에 정확히 해당하는 아이템을 우선 보여준다.
+    // 정확히 일치하는 상품이 너무 적으면(5개 미만), 같은 시즌의 다른 예산대 상품을 예산대가
+    // 가까운 순서로 보충해 최소한의 선택지를 제공한다 — 이때 어떤 게 정확히 일치하는지는
+    // exactBudgetMatch로 구분해 화면에 표시하므로 예산대를 속이지 않는다.
     const isKnownBudget = budget !== undefined && budget in BUDGET_CEILING;
-    const filtered = isKnownBudget
-      ? curatedItems.filter((item) => item.priceRange === budget)
-      : curatedItems;
 
-    const items: TrendItem[] = filtered.map((item) => ({ ...item, target: "전체 임직원" }));
+    let ranked: CuratedItem[] = curatedItems;
+    if (isKnownBudget) {
+      const budgetIndex = BUDGET_OPTIONS.indexOf(budget as (typeof BUDGET_OPTIONS)[number]);
+      ranked = [...curatedItems].sort((a, b) => {
+        const aExact = a.priceRange === budget ? 0 : 1;
+        const bExact = b.priceRange === budget ? 0 : 1;
+        if (aExact !== bExact) return aExact - bExact;
+        const aDist = Math.abs(BUDGET_OPTIONS.indexOf(a.priceRange as (typeof BUDGET_OPTIONS)[number]) - budgetIndex);
+        const bDist = Math.abs(BUDGET_OPTIONS.indexOf(b.priceRange as (typeof BUDGET_OPTIONS)[number]) - budgetIndex);
+        return aDist - bDist;
+      });
+    }
 
-    if (isKnownBudget && items.length === 0) {
+    const exactCount = isKnownBudget ? curatedItems.filter((i) => i.priceRange === budget).length : ranked.length;
+    const selected = isKnownBudget && exactCount < MIN_RESULTS ? ranked.slice(0, MIN_RESULTS) : ranked;
+
+    const items: TrendItem[] = selected.map((item) => ({
+      ...item,
+      target: "전체 임직원",
+      exactBudgetMatch: isKnownBudget ? item.priceRange === budget : true,
+    }));
+
+    if (items.length === 0) {
       return NextResponse.json(
         {
-          error: `"${season}" 시즌의 사전 조사 데이터 중 "${budget}" 예산대에 맞는 상품이 없습니다. 다른 예산대를 선택해보세요.`,
+          error: `"${season}" 시즌의 사전 조사 데이터가 없습니다. 다른 예산대를 선택해보세요.`,
         },
         { status: 404 }
       );
