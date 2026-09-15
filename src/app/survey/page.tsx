@@ -128,7 +128,7 @@ export default function SurveyPage() {
       {analysis && (
         <>
           <Card>
-            <SectionTitle title="2. 선호 카테고리 순위" />
+            <SectionTitle title="1. 선호 카테고리 순위" />
             {analysis.categoryCounts.length === 0 ? (
               <EmptyNotice>선호 카테고리 컬럼을 찾을 수 없어 분석을 생략합니다.</EmptyNotice>
             ) : (
@@ -169,7 +169,7 @@ export default function SurveyPage() {
           </Card>
 
           <Card>
-            <SectionTitle title="3. 연령대별 분석" />
+            <SectionTitle title="2. 연령대별 분석" />
             {!analysis.hasAge ? (
               <EmptyNotice>연령대 데이터가 없어 해당 분석을 생략합니다.</EmptyNotice>
             ) : (
@@ -178,7 +178,7 @@ export default function SurveyPage() {
           </Card>
 
           <Card>
-            <SectionTitle title="4. 부서별 분석" />
+            <SectionTitle title="3. 부서별 분석" />
             {!analysis.hasDept ? (
               <EmptyNotice>부서 데이터가 없어 해당 분석을 생략합니다.</EmptyNotice>
             ) : (
@@ -187,7 +187,7 @@ export default function SurveyPage() {
           </Card>
 
           <Card>
-            <SectionTitle title="5. 자유서술 답변 분석" />
+            <SectionTitle title="4. 자유서술 답변 분석" />
             {!analysis.hasComment ? (
               <EmptyNotice>자유서술 답변 데이터가 없어 해당 분석을 생략합니다.</EmptyNotice>
             ) : (
