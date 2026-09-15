@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Badge, Card, EmptyNotice, PrimaryButton, SectionTitle } from "@/components/ui";
+import { downloadProposalDocx } from "@/lib/generateProposal";
 import { buildRecommendations } from "@/lib/recommend";
 import { useStore } from "@/lib/store";
 
@@ -21,6 +22,7 @@ function downloadCsv(filename: string, rows: string[][]) {
 
 export default function RecommendPage() {
   const { trendResult, surveyAnalysis } = useStore();
+  const [generatingProposal, setGeneratingProposal] = useState(false);
 
   const recommendations = useMemo(() => {
     if (!trendResult || !surveyAnalysis) return null;
@@ -80,6 +82,16 @@ export default function RecommendPage() {
       ]),
     ];
     downloadCsv(`추천리포트_${trendResult.season}.csv`, rows);
+  }
+
+  async function exportProposal() {
+    if (!recommendations || !trendResult || !surveyAnalysis) return;
+    setGeneratingProposal(true);
+    try {
+      await downloadProposalDocx(trendResult, surveyAnalysis, recommendations);
+    } finally {
+      setGeneratingProposal(false);
+    }
   }
 
   return (
@@ -159,6 +171,13 @@ export default function RecommendPage() {
           <li>고객사 요청 예산과 최종 견적은 별도로 확인이 필요합니다.</li>
         </ul>
       </Card>
+
+      <div className="flex flex-col items-center gap-2 pt-2">
+        <PrimaryButton onClick={exportProposal} disabled={generatingProposal} className="px-6 py-3 text-[14px]">
+          {generatingProposal ? "제안서 생성 중..." : "고객사 제안서 다운로드 (.docx)"}
+        </PrimaryButton>
+        <p className="text-xs text-[var(--muted)]">위 내용을 정리한 워드 문서로 바로 다운로드됩니다.</p>
+      </div>
     </div>
   );
 }
