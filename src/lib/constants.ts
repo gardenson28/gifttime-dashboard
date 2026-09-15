@@ -19,16 +19,6 @@ export const BUDGET_OPTIONS = [
 
 export const CATEGORY_OPTIONS = ["식품", "생활용품", "디지털", "패션", "문구", "기타"] as const;
 
-// 실제 상품 사진 대신 카테고리를 나타내는 대표 아이콘(실제 상품 이미지가 아님을 명확히 함)
-export const CATEGORY_ICON: Record<string, string> = {
-  "식품": "🍯",
-  "생활용품": "🧺",
-  "디지털": "🎧",
-  "패션": "👜",
-  "문구": "🖋️",
-  "기타": "🎁",
-};
-
 export const AGE_GROUP_OPTIONS = ["20대", "30대", "40대", "50대 이상"] as const;
 
 export const DEPARTMENT_OPTIONS = ["인사", "영업", "마케팅", "개발", "경영지원"] as const;

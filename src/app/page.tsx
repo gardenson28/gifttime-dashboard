@@ -34,10 +34,10 @@ export default function Home() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="mt-1 text-3xl font-bold text-slate-900">
+        <h1 className="mt-1 text-3xl font-bold text-[var(--ink)]">
           시즌·이벤트 기반 기업 선물 트렌드 리서치 & 임직원 선호도 분석 대시보드
         </h1>
-        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-600">
+        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[var(--muted)]">
           시즌·예산을 선택해 실제 웹 검색 기반 선물 트렌드를 조사하고, 임직원 설문 데이터를 분석해 고객사에 제안할 선물군과 그 근거를 자동으로 정리합니다.
         </p>
       </div>
@@ -46,9 +46,9 @@ export default function Home() {
         <SectionTitle title="빠른 시작" subtitle="시즌과 예산대를 먼저 선택하면 리서치·추천 화면에 바로 반영됩니다." />
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-600">시즌/이벤트</label>
+            <label className="mb-1 block text-sm font-medium text-[var(--muted)]">시즌/이벤트</label>
             <select
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm outline-none transition focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand-soft)]"
               value={localSeason}
               onChange={(e) => setLocalSeason(e.target.value)}
             >
@@ -60,9 +60,9 @@ export default function Home() {
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-600">예산대</label>
+            <label className="mb-1 block text-sm font-medium text-[var(--muted)]">예산대</label>
             <select
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm outline-none transition focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand-soft)]"
               value={localBudget}
               onChange={(e) => setLocalBudget(e.target.value)}
             >
@@ -79,7 +79,7 @@ export default function Home() {
             {loading ? "조회 중..." : "트렌드 리서치 시작"}
           </PrimaryButton>
           <Link href="/survey">
-            <PrimaryButton className="bg-slate-800 hover:bg-slate-900">설문 분석 시작</PrimaryButton>
+            <PrimaryButton className="bg-[var(--ink)] hover:bg-black">설문 분석 시작</PrimaryButton>
           </Link>
         </div>
         {error && (
@@ -93,24 +93,24 @@ export default function Home() {
         <Card>
           <SectionTitle title="최근 트렌드 리서치" />
           {trendResult ? (
-            <div className="text-sm text-slate-700">
+            <div className="text-sm text-[var(--ink)]">
               <p>
                 <Badge>{trendResult.season}</Badge>{" "}
-                {trendResult.budget && <Badge tone="amber">{trendResult.budget}</Badge>}
+                {trendResult.budget && <Badge tone="brand">{trendResult.budget}</Badge>}
               </p>
               <p className="mt-2">검색된 상품 {trendResult.items.length}건</p>
-              <Link href="/research" className="mt-2 inline-block text-rose-600 underline">
+              <Link href="/research" className="mt-2 inline-block text-[var(--brand-hover)] underline">
                 자세히 보기 →
               </Link>
             </div>
           ) : (
-            <p className="text-sm text-slate-500">아직 실행한 리서치가 없습니다.</p>
+            <p className="text-sm text-[var(--muted)]">아직 실행한 리서치가 없습니다.</p>
           )}
         </Card>
         <Card>
           <SectionTitle title="최근 설문 분석" />
           {surveyAnalysis ? (
-            <div className="text-sm text-slate-700">
+            <div className="text-sm text-[var(--ink)]">
               <p>응답자 {surveyAnalysis.total}명 분석 완료</p>
               {surveyAnalysis.categoryCounts[0] && (
                 <p className="mt-1">
@@ -118,12 +118,12 @@ export default function Home() {
                   {surveyAnalysis.categoryCounts[0].pct}%)
                 </p>
               )}
-              <Link href="/survey" className="mt-2 inline-block text-rose-600 underline">
+              <Link href="/survey" className="mt-2 inline-block text-[var(--brand-hover)] underline">
                 자세히 보기 →
               </Link>
             </div>
           ) : (
-            <p className="text-sm text-slate-500">아직 실행한 분석이 없습니다.</p>
+            <p className="text-sm text-[var(--muted)]">아직 실행한 분석이 없습니다.</p>
           )}
         </Card>
       </div>

@@ -2,7 +2,9 @@ import type { ReactNode } from "react";
 
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
-    <div className={`rounded-xl border border-slate-200 bg-white p-6 shadow-sm ${className}`}>
+    <div
+      className={`rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 ${className}`}
+    >
       {children}
     </div>
   );
@@ -17,8 +19,8 @@ export function SectionTitle({
 }) {
   return (
     <div className="mb-4">
-      <h2 className="text-lg font-bold text-slate-800">{title}</h2>
-      {subtitle && <p className="mt-1 text-sm text-slate-500">{subtitle}</p>}
+      <h2 className="text-[15px] font-bold text-[var(--ink)]">{title}</h2>
+      {subtitle && <p className="mt-1 text-[13px] text-[var(--muted)]">{subtitle}</p>}
     </div>
   );
 }
@@ -30,7 +32,7 @@ export function PrimaryButton({
 }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
-      className={`rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:bg-slate-300 ${className}`}
+      className={`rounded-lg bg-[var(--brand)] px-4 py-2 text-[13.5px] font-semibold text-white transition hover:bg-[var(--brand-hover)] disabled:cursor-not-allowed disabled:bg-[var(--faint)] ${className}`}
       {...props}
     >
       {children}
@@ -45,7 +47,7 @@ export function SecondaryButton({
 }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
-      className={`rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+      className={`rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-[13.5px] font-semibold text-[var(--ink)] transition hover:bg-[var(--canvas)] disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
       {...props}
     >
       {children}
@@ -53,15 +55,21 @@ export function SecondaryButton({
   );
 }
 
-export function Badge({ children, tone = "default" }: { children: ReactNode; tone?: "default" | "rose" | "green" | "amber" }) {
+export function Badge({
+  children,
+  tone = "default",
+}: {
+  children: ReactNode;
+  tone?: "default" | "brand" | "positive" | "negative";
+}) {
   const toneClasses: Record<string, string> = {
-    default: "bg-slate-100 text-slate-600",
-    rose: "bg-rose-100 text-rose-700",
-    green: "bg-emerald-100 text-emerald-700",
-    amber: "bg-amber-100 text-amber-700",
+    default: "bg-[var(--canvas)] text-[var(--muted)]",
+    brand: "bg-[var(--brand-soft)] text-[var(--brand-hover)]",
+    positive: "bg-[var(--positive-soft)] text-[var(--positive)]",
+    negative: "bg-[var(--negative-soft)] text-[var(--negative)]",
   };
   return (
-    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${toneClasses[tone]}`}>
+    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[12px] font-medium ${toneClasses[tone]}`}>
       {children}
     </span>
   );
@@ -69,7 +77,7 @@ export function Badge({ children, tone = "default" }: { children: ReactNode; ton
 
 export function EmptyNotice({ children }: { children: ReactNode }) {
   return (
-    <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-500">
+    <div className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--canvas)] p-4 text-[13.5px] text-[var(--muted)]">
       {children}
     </div>
   );
@@ -77,7 +85,7 @@ export function EmptyNotice({ children }: { children: ReactNode }) {
 
 export function ErrorNotice({ children }: { children: ReactNode }) {
   return (
-    <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+    <div className="rounded-lg border border-[var(--negative-soft)] bg-[var(--negative-soft)] p-4 text-[13.5px] text-[var(--negative)]">
       {children}
     </div>
   );

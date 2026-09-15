@@ -1,8 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { BUDGET_OPTIONS, CATEGORY_ICON, CATEGORY_OPTIONS, SEASON_OPTIONS } from "@/lib/constants";
+import { BUDGET_OPTIONS, CATEGORY_OPTIONS, SEASON_OPTIONS } from "@/lib/constants";
 import { Badge, Card, EmptyNotice, ErrorNotice, PrimaryButton, SecondaryButton, SectionTitle } from "@/components/ui";
+import { CATEGORY_ICON_COMPONENT, IconTag } from "@/components/icons";
 import { useStore } from "@/lib/store";
 import { fetchTrendResearch } from "@/lib/trendApi";
 import type { TrendItem } from "@/lib/types";
@@ -52,8 +53,8 @@ export default function ResearchPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">시즌·이벤트 트렌드 리서치</h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <h1 className="text-2xl font-bold text-[var(--ink)]">시즌·이벤트 트렌드 리서치</h1>
+        <p className="mt-1 text-sm text-[var(--muted)]">
           Claude가 실제 웹 검색으로 사전 조사한 시즌별 기업 선물 트렌드 데이터를 보여줍니다. 실시간 검색이 아닌 사전 조사
           데이터이며, 각 아이템의 출처 링크에서 원문을 확인할 수 있습니다. 사전 조사 데이터가 없는 시즌은 임의로 만들어내지
           않고 오류로 안내합니다.
@@ -64,9 +65,9 @@ export default function ResearchPage() {
         <SectionTitle title="검색 조건" />
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-600">시즌/이벤트</label>
+            <label className="mb-1 block text-sm font-medium text-[var(--muted)]">시즌/이벤트</label>
             <select
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm outline-none transition focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand-soft)]"
               value={seasonInput}
               onChange={(e) => setSeasonInput(e.target.value)}
             >
@@ -79,7 +80,7 @@ export default function ResearchPage() {
             </select>
             {seasonInput === "직접 입력" && (
               <input
-                className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                className="mt-2 w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm outline-none transition focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand-soft)]"
                 placeholder="예: 창립기념일"
                 value={customSeason}
                 onChange={(e) => setCustomSeason(e.target.value)}
@@ -87,9 +88,9 @@ export default function ResearchPage() {
             )}
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-600">예산대 (선택사항)</label>
+            <label className="mb-1 block text-sm font-medium text-[var(--muted)]">예산대 (선택사항)</label>
             <select
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm outline-none transition focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand-soft)]"
               value={budgetInput}
               onChange={(e) => setBudgetInput(e.target.value)}
             >
@@ -103,7 +104,7 @@ export default function ResearchPage() {
             </select>
             {budgetInput === "직접 입력" && (
               <input
-                className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                className="mt-2 w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm outline-none transition focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand-soft)]"
                 placeholder="예: 7만원대"
                 value={customBudget}
                 onChange={(e) => setCustomBudget(e.target.value)}
@@ -130,12 +131,12 @@ export default function ResearchPage() {
               title={`"${trendResult.season}" 트렌드 검색 결과`}
               subtitle={trendResult.budget ? `예산대: ${trendResult.budget}` : undefined}
             />
-            <Badge tone={trendResult.dataSource === "naver-live" ? "green" : "default"}>
+            <Badge tone={trendResult.dataSource === "naver-live" ? "positive" : "default"}>
               {trendResult.dataSource === "naver-live" ? "실시간 검색 결과" : "사전 조사 데이터"}
             </Badge>
             <div className="flex gap-2 text-sm">
               <select
-                className="rounded-lg border border-slate-300 px-3 py-1.5"
+                className="rounded-lg border border-[var(--border)] px-3 py-1.5"
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
               >
@@ -156,19 +157,22 @@ export default function ResearchPage() {
               {filteredItems.map((item, idx) => {
                 const saved = savedCandidates.includes(item.name);
                 return (
-                  <li key={idx} className="rounded-lg border border-slate-200 p-4">
+                  <li key={idx} className="rounded-lg border border-[var(--border)] p-4">
                     <div className="flex flex-wrap items-start gap-3">
-                      <div className="flex h-14 w-14 flex-none items-center justify-center rounded-lg bg-slate-100 text-2xl">
-                        {CATEGORY_ICON[item.category] ?? "🎁"}
+                      <div className="flex h-14 w-14 flex-none items-center justify-center rounded-lg bg-[var(--canvas)] text-[var(--brand-hover)]">
+                        {(() => {
+                          const Icon = CATEGORY_ICON_COMPONENT[item.category] ?? IconTag;
+                          return <Icon className="h-6 w-6" />;
+                        })()}
                       </div>
                       <div className="flex min-w-0 flex-1 flex-wrap items-start justify-between gap-3">
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-semibold text-slate-800">{item.name}</span>
+                          <span className="font-semibold text-[var(--ink)]">{item.name}</span>
                           <Badge>{item.category}</Badge>
-                          <Badge tone="amber">{item.priceRange}</Badge>
+                          <Badge tone="brand">{item.priceRange}</Badge>
                           {item.recency === "recent" ? (
-                            <Badge tone="green">최근 트렌드</Badge>
+                            <Badge tone="positive">최근 트렌드</Badge>
                           ) : item.recency === "classic" ? (
                             <Badge tone="default">스테디셀러</Badge>
                           ) : null}
@@ -176,12 +180,12 @@ export default function ResearchPage() {
                             <Badge tone="default">선택 예산대 근접 참고</Badge>
                           )}
                         </div>
-                        <p className="mt-2 text-sm text-slate-600">{item.reason}</p>
+                        <p className="mt-2 text-sm text-[var(--muted)]">{item.reason}</p>
                         <a
                           href={item.source}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="mt-2 inline-block text-xs text-rose-600 underline"
+                          className="mt-2 inline-block text-xs text-[var(--brand-hover)] underline"
                         >
                           출처 원문 보기 →
                         </a>

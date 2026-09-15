@@ -18,9 +18,10 @@ import {
 import { analyzeSurvey } from "@/lib/analysis";
 import { parseSurveyCsv } from "@/lib/csv";
 import { Badge, Card, EmptyNotice, ErrorNotice, PrimaryButton, SectionTitle } from "@/components/ui";
+import { IconUpload } from "@/components/icons";
 import { useStore } from "@/lib/store";
 
-const CHART_COLORS = ["#e11d48", "#f59e0b", "#0ea5e9", "#8b5cf6", "#22c55e", "#94a3b8"];
+const CHART_COLORS = ["#fc6c2c", "#2b3648", "#f4a950", "#3f7c74", "#16a463", "#9aa0ab"];
 const SAMPLE_SIZE = 100;
 
 function sampleRandom<T>(rows: T[], size: number): T[] {
@@ -87,8 +88,8 @@ export default function SurveyPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">임직원 선호도 설문 분석</h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <h1 className="text-2xl font-bold text-[var(--ink)]">임직원 선호도 설문 분석</h1>
+        <p className="mt-1 text-sm text-[var(--muted)]">
           설문 데이터 파일을 업로드하고 분석을 실행하면 선호 카테고리·연령대·부서·자유서술 답변 분석 결과를 볼 수 있습니다.
         </p>
       </div>
@@ -97,13 +98,15 @@ export default function SurveyPage() {
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="flex w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center transition hover:border-rose-400 hover:bg-rose-50/40"
+          className="flex w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[var(--border)] bg-[var(--canvas)] px-6 py-10 text-center transition hover:border-[var(--brand)] hover:bg-[var(--brand-soft)]"
         >
-          <span className="text-3xl">📄</span>
-          <span className="text-sm font-semibold text-slate-700">
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--surface)] text-[var(--brand)]">
+            <IconUpload className="h-5 w-5" />
+          </span>
+          <span className="text-sm font-semibold text-[var(--ink)]">
             {fileName ?? "설문 데이터 파일을 업로드하세요 (Excel/CSV)"}
           </span>
-          <span className="text-xs text-slate-400">클릭해서 파일 선택 · 응답자ID, 연령대, 부서, 선호카테고리, 선호예산대, 자유서술답변, 만족도 컬럼 지원</span>
+          <span className="text-xs text-[var(--faint)]">클릭해서 파일 선택 · 응답자ID, 연령대, 부서, 선호카테고리, 선호예산대, 자유서술답변, 만족도 컬럼 지원</span>
         </button>
         <input
           ref={fileInputRef}
@@ -135,7 +138,7 @@ export default function SurveyPage() {
               <div className="grid gap-6 md:grid-cols-2">
                 <ResponsiveContainer width="100%" height={260}>
                   <BarChart data={analysis.categoryCounts}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e6ea" />
                     <XAxis dataKey="category" tick={{ fontSize: 12 }} />
                     <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
                     <Tooltip />
@@ -193,25 +196,25 @@ export default function SurveyPage() {
             ) : (
               <div className="grid gap-6 md:grid-cols-2">
                 <div>
-                  <p className="mb-2 text-sm font-semibold text-slate-600">주요 키워드 언급 횟수</p>
+                  <p className="mb-2 text-sm font-semibold text-[var(--muted)]">주요 키워드 언급 횟수</p>
                   <ResponsiveContainer width="100%" height={220}>
                     <BarChart data={analysis.keywords} layout="vertical">
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e6ea" />
                       <XAxis type="number" allowDecimals={false} tick={{ fontSize: 12 }} />
                       <YAxis type="category" dataKey="word" width={70} tick={{ fontSize: 12 }} />
                       <Tooltip />
-                      <Bar dataKey="count" fill="#e11d48" radius={[0, 4, 4, 0]} />
+                      <Bar dataKey="count" fill="#fc6c2c" radius={[0, 4, 4, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
                 <div>
-                  <p className="mb-2 text-sm font-semibold text-slate-600">긍정·부정·중립 비율</p>
+                  <p className="mb-2 text-sm font-semibold text-[var(--muted)]">긍정·부정·중립 비율</p>
                   <div className="flex gap-3">
-                    <Badge tone="green">긍정 {analysis.sentiment.positive}명</Badge>
+                    <Badge tone="positive">긍정 {analysis.sentiment.positive}명</Badge>
                     <Badge tone="default">중립 {analysis.sentiment.neutral}명</Badge>
-                    <Badge tone="rose">부정 {analysis.sentiment.negative}명</Badge>
+                    <Badge tone="negative">부정 {analysis.sentiment.negative}명</Badge>
                   </div>
-                  <p className="mt-4 text-xs text-slate-500">
+                  <p className="mt-4 text-xs text-[var(--muted)]">
                     "좋습니다/만족/편리" 등 긍정 표현, "별로/불편/아쉽" 등 부정 표현이 포함된 응답을 기준으로 한
                     간단 규칙 기반 분류입니다.
                   </p>
@@ -220,15 +223,15 @@ export default function SurveyPage() {
             )}
           </Card>
 
-          <Card className="bg-rose-50/60">
+          <Card className="bg-[var(--brand-soft)]">
             <SectionTitle title="분석 요약" />
-            <p className="text-sm leading-relaxed text-slate-700">{analysis.summary}</p>
-            {sourceLabel && <p className="mt-2 text-xs text-slate-400">데이터 출처: {sourceLabel}</p>}
+            <p className="text-sm leading-relaxed text-[var(--ink)]">{analysis.summary}</p>
+            {sourceLabel && <p className="mt-2 text-xs text-[var(--faint)]">데이터 출처: {sourceLabel}</p>}
           </Card>
 
           <div className="flex justify-center">
             <Link href="/recommend">
-              <PrimaryButton className="bg-emerald-600 hover:bg-emerald-700">
+              <PrimaryButton className="bg-[var(--positive)] hover:bg-[#0f7a4c]">
                 이 분석으로 매칭 추천 보기 →
               </PrimaryButton>
             </Link>
@@ -243,7 +246,7 @@ function GroupTable({ rows }: { rows: { group: string; topCategory: string; topB
   return (
     <div className="overflow-x-auto">
       <table className="w-full min-w-[480px] text-left text-sm">
-        <thead className="text-slate-500">
+        <thead className="text-[var(--muted)]">
           <tr>
             <th className="pb-2 pr-4">그룹</th>
             <th className="pb-2 pr-4">응답자 수</th>
@@ -254,8 +257,8 @@ function GroupTable({ rows }: { rows: { group: string; topCategory: string; topB
         </thead>
         <tbody>
           {rows.map((row) => (
-            <tr key={row.group} className="border-t border-slate-100">
-              <td className="py-2 pr-4 font-medium text-slate-800">{row.group}</td>
+            <tr key={row.group} className="border-t border-[var(--border)]">
+              <td className="py-2 pr-4 font-medium text-[var(--ink)]">{row.group}</td>
               <td className="py-2 pr-4">{row.count}명</td>
               <td className="py-2 pr-4">{row.topCategory}</td>
               <td className="py-2 pr-4">{row.topBudget}</td>
