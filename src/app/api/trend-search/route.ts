@@ -95,15 +95,24 @@ export async function POST(req: NextRequest) {
   const curatedItems = CURATED[season];
 
   if (curatedItems) {
-    const ceiling = budget ? BUDGET_CEILING[budget] : undefined;
-    const items: TrendItem[] = curatedItems
-      .map((item) => ({ ...item, target: "전체 임직원" }))
-      .sort((a, b) => {
-        if (ceiling === undefined) return 0;
-        const aFits = a.priceValue !== null && a.priceValue <= ceiling ? 0 : 1;
-        const bFits = b.priceValue !== null && b.priceValue <= ceiling ? 0 : 1;
-        return aFits - bFits;
-      });
+    // 예산대를 지정하면 그 예산대에 정확히 해당하는 아이템만 보여준다.
+    // budget이 미리 정의된 예산대(BUDGET_OPTIONS)와 정확히 일치하지 않으면(예: "직접 입력" 텍스트)
+    // 판단할 기준이 없으므로 필터링하지 않고 전체를 보여준다.
+    const isKnownBudget = budget !== undefined && budget in BUDGET_CEILING;
+    const filtered = isKnownBudget
+      ? curatedItems.filter((item) => item.priceRange === budget)
+      : curatedItems;
+
+    const items: TrendItem[] = filtered.map((item) => ({ ...item, target: "전체 임직원" }));
+
+    if (isKnownBudget && items.length === 0) {
+      return NextResponse.json(
+        {
+          error: `"${season}" 시즌의 사전 조사 데이터 중 "${budget}" 예산대에 맞는 상품이 없습니다. 다른 예산대를 선택해보세요.`,
+        },
+        { status: 404 }
+      );
+    }
 
     return NextResponse.json({
       season,

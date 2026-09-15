@@ -70,7 +70,7 @@ def build_comment() -> str:
 
 def main():
     rows = []
-    total = 60
+    total = 500
     for i in range(1, total + 1):
         age_group = random.choice(AGE_GROUPS)
         department = random.choice(DEPARTMENTS)

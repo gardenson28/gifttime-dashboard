@@ -47,6 +47,14 @@
       "priceValue": 20000,
       "reason": "생필품 세트에 대한 선호는 줄고, 원하는 상품을 직접 고를 수 있는 선택형 선물의 선호도가 높아지는 추세로 소개됩니다.",
       "source": "https://inblog.ai/giftishowbiz/%EC%8B%A4%EC%86%8D%EA%B3%BC-%EB%A7%88%EC%9D%8C%EC%9D%84-%EB%8B%B4%EC%9D%80-%ED%9A%8C%EC%82%AC-%EC%84%A4-%EC%84%A0%EB%AC%BC-%EC%B6%94%EC%B2%9C-%EC%9E%84%EC%A7%81%EC%9B%90%EC%9D%B4-%EB%AA%A8%EB%91%90-%EB%A7%8C%EC%A1%B1%ED%95%98%EB%8A%94-%ED%8A%B9%EB%B3%84%ED%95%9C-%EC%84%A0%ED%83%9D-40467"
+    },
+    {
+      "name": "초가성비 실속 선물세트",
+      "category": "식품",
+      "priceRange": "1만원 이하",
+      "priceValue": 8000,
+      "reason": "1만원대 이하 초가성비 선물세트 매출이 전년 대비 25%가량 증가할 만큼 수요가 늘고 있는 실속형 명절 선물로 소개됩니다.",
+      "source": "https://www.khan.co.kr/article/202501051530001"
     }
   ],
   "추석": [
@@ -73,6 +81,22 @@
       "priceValue": 8000,
       "reason": "1만~2만원대에서 가장 부담 없이 선택할 수 있는 명절 선물로 소개됩니다.",
       "source": "https://sendbee.co.kr/archive/%EA%B8%B0%EC%97%85-%EC%A7%81%EC%9B%90-%EC%84%A0%EB%AC%BC-%EC%84%A0%ED%83%9D-%EA%B0%80%EC%9D%B4%EB%93%9C-%EC%83%81%ED%99%A9%EB%B3%84-%EC%B6%94%EC%B2%9C-%EC%98%88%EC%82%B0%EB%B3%84/"
+    },
+    {
+      "name": "한우 실속 선물세트",
+      "category": "식품",
+      "priceRange": "5만~10만원",
+      "priceValue": 70000,
+      "reason": "10만원 이하 구성의 한우 실속세트로, 합리적인 가격대의 프리미엄 명절 선물로 소개됩니다.",
+      "source": "https://hanwooeats.com/category/%EC%8B%A4%EC%86%8D%EC%84%B8%ED%8A%B8-10%EB%A7%8C%EC%9B%90-%EC%9D%B4%ED%95%98/24/"
+    },
+    {
+      "name": "프리미엄 한우 선물세트",
+      "category": "식품",
+      "priceRange": "10만원 이상",
+      "priceValue": 174400,
+      "reason": "대형마트들이 10만원대 한우 세트 구성을 확대할 만큼 명절 대표 프리미엄 선물로 꼽히며, 5만~10만원대 선물세트 매출도 전년 대비 21.9% 증가했습니다.",
+      "source": "https://www.hankyung.com/article/202609154636g"
     }
   ],
   "여름휴가": [
@@ -107,6 +131,14 @@
       "priceValue": 40000,
       "reason": "여름 시즌 워크샵·사내 행사용 단체 선물로 기획되는 경우가 많다고 소개됩니다.",
       "source": "https://www.sumthing.co.kr/magazine/?bmode=view&idx=165053571"
+    },
+    {
+      "name": "프리미엄 수제 쿠키 세트",
+      "category": "식품",
+      "priceRange": "5만~10만원",
+      "priceValue": 70000,
+      "reason": "고급스러운 패키지와 다양한 맛 구성이 특징인 프리미엄 여름 휴가 선물로 소개됩니다.",
+      "source": "https://thehyundaiblog.com/entry/gift-curation-8"
     }
   ],
   "연말": [
@@ -259,6 +291,14 @@
       "priceValue": 70000,
       "reason": "사회초년생의 업무용 실용 선물로 언급됩니다.",
       "source": "https://www.dealsfor.me/Blog/2025-jol-eobsig-seonmul-chucheon-sil-yongjeog-igo-gamdongjeog-in-wanbyeog-gaideu"
+    },
+    {
+      "name": "미니 보조배터리·에코백 세트",
+      "category": "생활용품",
+      "priceRange": "1만원 이하",
+      "priceValue": 8000,
+      "reason": "1만원 이하로 준비할 수 있는 실속형 입사 축하 선물로 소개됩니다.",
+      "source": "https://biz.giftishow.com/blog/hr-%EB%8B%B4%EB%8B%B9%EC%9E%90-%ED%95%84%EB%8F%85-%EC%A7%81%EC%9B%90%EB%93%A4%EC%9D%84-%EC%9C%84%ED%95%9C-%EC%8B%A4%EC%9A%A9%EC%A0%81%EC%9D%B8-%EC%84%A0%EB%AC%BC-%EC%B6%94%EC%B2%9C-6%EA%B0%80%EC%A7%80-41459"
     }
   ],
   "승진": [
@@ -293,6 +333,14 @@
       "priceValue": 70000,
       "reason": "목·어깨·눈 피로를 풀어주는 선물로 승진 축하 선물 중 인기가 높다고 소개됩니다.",
       "source": "https://irondle.com/entry/%EC%8A%B9%EC%A7%84-%EC%B6%95%ED%95%98-%EC%84%A0%EB%AC%BC-%EC%B6%94%EC%B2%9C-BEST-10"
+    },
+    {
+      "name": "레터링 축하 케이크",
+      "category": "식품",
+      "priceRange": "1만~3만원",
+      "priceValue": 20000,
+      "reason": "이름·메시지를 새긴 레터링 케이크는 팀원들과 나눠 먹으며 축하 분위기를 만드는 대표적인 승진 축하 선물로 소개됩니다.",
+      "source": "https://www.sumthing.co.kr/magazine/?bmode=view&idx=165421404"
     }
   ]
 }

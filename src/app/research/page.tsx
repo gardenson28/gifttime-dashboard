@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { BUDGET_CEILING, BUDGET_OPTIONS, CATEGORY_OPTIONS, SEASON_OPTIONS } from "@/lib/constants";
+import { BUDGET_OPTIONS, CATEGORY_OPTIONS, SEASON_OPTIONS } from "@/lib/constants";
 import { Badge, Card, EmptyNotice, ErrorNotice, PrimaryButton, SecondaryButton, SectionTitle } from "@/components/ui";
 import { useStore } from "@/lib/store";
 import type { TrendItem } from "@/lib/types";
@@ -17,7 +17,6 @@ export default function ResearchPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string>("전체");
-  const [onlyWithinBudget, setOnlyWithinBudget] = useState(false);
 
   const effectiveSeason = seasonInput === "직접 입력" ? customSeason.trim() : seasonInput;
   const effectiveBudget = budgetInput === "직접 입력" ? customBudget.trim() : budgetInput;
@@ -55,15 +54,9 @@ export default function ResearchPage() {
     if (!trendResult) return [];
     return trendResult.items.filter((item) => {
       if (categoryFilter !== "전체" && item.category !== categoryFilter) return false;
-      if (onlyWithinBudget && trendResult.budget) {
-        const ceiling = BUDGET_CEILING[trendResult.budget];
-        if (ceiling !== undefined && item.priceValue !== null && item.priceValue > ceiling) {
-          return false;
-        }
-      }
       return true;
     });
-  }, [trendResult, categoryFilter, onlyWithinBudget]);
+  }, [trendResult, categoryFilter]);
 
   return (
     <div className="space-y-6">
@@ -162,14 +155,6 @@ export default function ResearchPage() {
                   </option>
                 ))}
               </select>
-              <label className="flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5">
-                <input
-                  type="checkbox"
-                  checked={onlyWithinBudget}
-                  onChange={(e) => setOnlyWithinBudget(e.target.checked)}
-                />
-                예산 내 상품만
-              </label>
             </div>
           </div>
 

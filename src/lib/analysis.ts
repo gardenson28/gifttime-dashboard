@@ -1,4 +1,5 @@
 import {
+  AGE_GROUP_OPTIONS,
   KEYWORD_DICTIONARY,
   NEGATIVE_WORDS,
   POSITIVE_WORDS,
@@ -39,17 +40,30 @@ function groupBy(rows: SurveyRow[], key: "ageGroup" | "department"): GroupBreakd
     if (!groups.has(g)) groups.set(g, []);
     groups.get(g)!.push(row);
   }
-  return Array.from(groups.entries())
-    .map(([group, groupRows]) => ({
-      group,
-      topCategory: mostCommon(groupRows.map((r) => r.category).filter((v): v is string => !!v)),
-      topBudget: mostCommon(groupRows.map((r) => r.budget).filter((v): v is string => !!v)),
-      avgSatisfaction: average(
-        groupRows.map((r) => r.satisfaction).filter((v): v is number => typeof v === "number")
-      ),
-      count: groupRows.length,
-    }))
-    .sort((a, b) => b.count - a.count);
+  const breakdowns = Array.from(groups.entries()).map(([group, groupRows]) => ({
+    group,
+    topCategory: mostCommon(groupRows.map((r) => r.category).filter((v): v is string => !!v)),
+    topBudget: mostCommon(groupRows.map((r) => r.budget).filter((v): v is string => !!v)),
+    avgSatisfaction: average(
+      groupRows.map((r) => r.satisfaction).filter((v): v is number => typeof v === "number")
+    ),
+    count: groupRows.length,
+  }));
+
+  if (key === "ageGroup") {
+    // 연령대는 응답자 수 순이 아니라 20대 -> 50대 이상 순으로 자연스럽게 정렬한다.
+    const order = AGE_GROUP_OPTIONS as readonly string[];
+    return breakdowns.sort((a, b) => {
+      const ai = order.indexOf(a.group);
+      const bi = order.indexOf(b.group);
+      if (ai === -1 && bi === -1) return a.group.localeCompare(b.group);
+      if (ai === -1) return 1;
+      if (bi === -1) return -1;
+      return ai - bi;
+    });
+  }
+
+  return breakdowns.sort((a, b) => b.count - a.count);
 }
 
 function analyzeKeywords(comments: string[]): KeywordCount[] {
@@ -117,7 +131,7 @@ export function analyzeSurvey(rows: SurveyRow[]): SurveyAnalysis {
     }
   }
   if (byAge.length > 0) {
-    const sample = byAge[0];
+    const sample = [...byAge].sort((a, b) => b.count - a.count)[0];
     summaryParts.push(
       `${sample.group} 응답자는 ${sample.topCategory}을(를), 평균 만족도 ${sample.avgSatisfaction}점으로 응답했습니다.`
     );

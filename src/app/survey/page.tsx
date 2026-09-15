@@ -21,25 +21,42 @@ import { useStore } from "@/lib/store";
 import type { SurveyRow } from "@/lib/types";
 
 const CHART_COLORS = ["#e11d48", "#f59e0b", "#0ea5e9", "#8b5cf6", "#22c55e", "#94a3b8"];
+const SAMPLE_SIZE = 100;
+
+function sampleRandom<T>(rows: T[], size: number): T[] {
+  const shuffled = [...rows];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled.slice(0, size);
+}
 
 export default function SurveyPage() {
   const { surveyRows, surveyAnalysis, setSurveyData } = useStore();
   const [pendingRows, setPendingRows] = useState<SurveyRow[] | null>(null);
   const [sourceLabel, setSourceLabel] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
+  const [analyzing, setAnalyzing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  async function loadDummyData() {
+  async function analyzeSampledData() {
     setError(null);
+    setAnalyzing(true);
     try {
       const res = await fetch("/sample-survey.csv");
       if (!res.ok) throw new Error("샘플 데이터를 불러오지 못했습니다.");
       const text = await res.text();
       const parsed = parseSurveyCsv(text);
-      setPendingRows(parsed.rows);
-      setSourceLabel(`더미 데이터 (${parsed.rows.length}명)`);
+      const sample = sampleRandom(parsed.rows, SAMPLE_SIZE);
+      const analysis = analyzeSurvey(sample);
+      setSurveyData(sample, analysis);
+      setPendingRows(null);
+      setSourceLabel(`전체 응답자 ${parsed.rows.length}명 중 무작위 ${sample.length}명 표본 분석`);
     } catch {
       setError("샘플 설문 데이터를 불러오는 중 문제가 발생했습니다.");
+    } finally {
+      setAnalyzing(false);
     }
   }
 
@@ -84,9 +101,14 @@ export default function SurveyPage() {
       </div>
 
       <Card>
-        <SectionTitle title="1. 데이터 준비" subtitle="더미 데이터 또는 직접 수집한 CSV 파일을 사용할 수 있습니다." />
+        <SectionTitle
+          title="1. 데이터 준비"
+          subtitle="더미 설문 500명 중 무작위 100명을 뽑아 바로 분석하거나, 직접 수집한 CSV 파일을 업로드할 수 있습니다."
+        />
         <div className="flex flex-wrap gap-3">
-          <PrimaryButton onClick={loadDummyData}>더미 데이터 불러오기</PrimaryButton>
+          <PrimaryButton onClick={analyzeSampledData} disabled={analyzing}>
+            {analyzing ? "분석 중..." : "설문 분석하기"}
+          </PrimaryButton>
           <SecondaryButton onClick={() => fileInputRef.current?.click()}>CSV 파일 업로드</SecondaryButton>
           <input
             ref={fileInputRef}
