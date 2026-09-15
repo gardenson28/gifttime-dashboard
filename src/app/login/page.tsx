@@ -1,11 +1,10 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Card, ErrorNotice, PrimaryButton } from "@/components/ui";
 
 function LoginForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -27,8 +26,9 @@ function LoginForm() {
         return;
       }
       const next = searchParams.get("next") || "/";
-      router.push(next);
-      router.refresh();
+      // 로그인 직후에는 클라이언트 라우터 캐시가 이전(비로그인) 응답을 들고 있을 수 있어
+      // 완전한 페이지 이동으로 서버에 새 쿠키를 확실히 반영시킨다.
+      window.location.href = next;
     } catch {
       setError("요청을 보내지 못했습니다. 네트워크 상태를 확인해주세요.");
     } finally {
