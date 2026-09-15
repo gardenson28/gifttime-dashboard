@@ -97,6 +97,16 @@ export type SalesAffiliate = {
   updated_at: string;
 };
 
+export type SalesEmployee = {
+  id: number;
+  client_id: number;
+  employee_code: string;
+  department: string | null;
+  quarter: string;
+  usage_amount: number;
+  created_at: string;
+};
+
 export type ActivationReport = {
   id: number;
   client_id: number;

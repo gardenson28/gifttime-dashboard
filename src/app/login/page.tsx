@@ -40,7 +40,7 @@ function LoginForm() {
     <div className="mx-auto mt-20 max-w-sm">
       <Card>
         <h1 className="text-lg font-bold text-[var(--ink)]">선물 트렌드 분석</h1>
-        <p className="mt-1 text-sm text-[var(--muted)]">감동타임 운영팀 전용 내부 도구입니다. 비밀번호를 입력해주세요.</p>
+        <p className="mt-1 text-sm text-[var(--muted)]">이트너스 전용 내부 도구입니다. 비밀번호를 입력해주세요.</p>
         <form onSubmit={handleSubmit} className="mt-5 space-y-3">
           <input
             type="password"

@@ -16,7 +16,7 @@ import {
   YAxis,
 } from "recharts";
 import { analyzeSurvey } from "@/lib/analysis";
-import { parseSurveyCsv } from "@/lib/csv";
+import { parseSurveyCsv, parseSurveyXlsx } from "@/lib/csv";
 import { Badge, Card, EmptyNotice, ErrorNotice, PrimaryButton, SectionTitle } from "@/components/ui";
 import { IconUpload } from "@/components/icons";
 import { useStore } from "@/lib/store";
@@ -56,10 +56,12 @@ export default function SurveyPage() {
     try {
       const file = uploadedFileRef.current;
       if (file) {
-        const text = await file.text();
-        const parsed = parseSurveyCsv(text);
+        const isExcel = /\.(xlsx|xls)$/i.test(file.name);
+        const parsed = isExcel
+          ? parseSurveyXlsx(await file.arrayBuffer())
+          : parseSurveyCsv(await file.text());
         if (parsed.rows.length === 0) {
-          setError("업로드한 파일에서 데이터를 찾을 수 없습니다. 헤더 행이 있는 CSV 형식인지 확인해주세요.");
+          setError("업로드한 파일에서 데이터를 찾을 수 없습니다. 헤더 행이 있는 CSV/엑셀 형식인지 확인해주세요.");
           return;
         }
         const analysis = analyzeSurvey(parsed.rows);
@@ -115,6 +117,12 @@ export default function SurveyPage() {
           className="hidden"
           onChange={handleFileSelect}
         />
+        <p className="mt-2 text-center text-xs text-[var(--muted)]">
+          업로드할 파일 형식이 궁금하다면{" "}
+          <a href="/sample-survey.xlsx" download className="text-[var(--brand-hover)] underline">
+            샘플 엑셀 파일 다운로드
+          </a>
+        </p>
 
         <div className="mt-4 flex justify-center">
           <PrimaryButton onClick={runAnalysis} disabled={analyzing}>

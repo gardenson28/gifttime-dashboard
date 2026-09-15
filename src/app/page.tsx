@@ -34,7 +34,7 @@ export default function Home() {
   return (
     <div className="space-y-8">
       <div>
-        <Badge tone="brand">감동타임 운영팀 전용 내부 도구</Badge>
+        <Badge tone="brand">이트너스 전용 내부 도구</Badge>
         <h1 className="mt-2 text-3xl font-bold text-[var(--ink)]">
           시즌·이벤트 기반 기업 선물 트렌드 리서치 & 임직원 선호도 분석 대시보드
         </h1>

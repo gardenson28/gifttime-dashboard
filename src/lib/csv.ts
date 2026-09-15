@@ -1,4 +1,5 @@
 import Papa from "papaparse";
+import * as XLSX from "xlsx";
 import type { SurveyRow } from "./types";
 
 const HEADER_ALIASES: Record<keyof SurveyRow, string[]> = {
@@ -35,19 +36,15 @@ export type ParsedSurvey = {
   unmappedFields: (keyof SurveyRow)[];
 };
 
-export function parseSurveyCsv(csvText: string): ParsedSurvey {
-  const result = Papa.parse<Record<string, string>>(csvText, {
-    header: true,
-    skipEmptyLines: true,
-  });
-
-  const headers = result.meta.fields ?? [];
+function mapRawRowsToSurvey(rawRows: Record<string, unknown>[], headers: string[]): ParsedSurvey {
   const headerMap = buildHeaderMap(headers);
 
-  const rows: SurveyRow[] = result.data.map((raw, idx) => {
+  const rows: SurveyRow[] = rawRows.map((raw, idx) => {
     const get = (field: keyof SurveyRow) => {
       const col = headerMap[field];
-      return col ? raw[col]?.trim() : undefined;
+      if (!col) return undefined;
+      const value = raw[col];
+      return value === undefined || value === null ? undefined : String(value).trim();
     };
     const satisfactionRaw = get("satisfaction");
     return {
@@ -67,4 +64,23 @@ export function parseSurveyCsv(csvText: string): ParsedSurvey {
   );
 
   return { rows, headers, mappedFields, unmappedFields };
+}
+
+export function parseSurveyCsv(csvText: string): ParsedSurvey {
+  const result = Papa.parse<Record<string, string>>(csvText, {
+    header: true,
+    skipEmptyLines: true,
+  });
+  const headers = result.meta.fields ?? [];
+  return mapRawRowsToSurvey(result.data, headers);
+}
+
+/** 엑셀(.xlsx/.xls) 파일의 첫 번째 시트를 읽어 설문 데이터로 변환한다. */
+export function parseSurveyXlsx(buffer: ArrayBuffer): ParsedSurvey {
+  const workbook = XLSX.read(buffer, { type: "array" });
+  const firstSheetName = workbook.SheetNames[0];
+  const sheet = workbook.Sheets[firstSheetName];
+  const rawRows: Record<string, unknown>[] = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+  const headers = rawRows.length > 0 ? Object.keys(rawRows[0]) : [];
+  return mapRawRowsToSurvey(rawRows, headers);
 }

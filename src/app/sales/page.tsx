@@ -17,6 +17,7 @@ import {
   type AffiliateStatus,
   type SalesAffiliate,
   type SalesClient,
+  type SalesEmployee,
 } from "@/lib/types";
 
 const inputClass =
@@ -43,7 +44,7 @@ export default function SalesPage() {
   const [clients, setClients] = useState<SalesClient[]>([]);
   const [selectedClientId, setSelectedClientId] = useState<number | null>(null);
   const [newClientName, setNewClientName] = useState("");
-  const [tab, setTab] = useState<"affiliates" | "activation">("affiliates");
+  const [tab, setTab] = useState<"affiliates" | "activation" | "employees">("affiliates");
   const [error, setError] = useState<string | null>(null);
   const [loadingClients, setLoadingClients] = useState(true);
 
@@ -159,12 +160,22 @@ export default function SalesPage() {
             >
               ② 활성률 리포트
             </button>
+            <button
+              onClick={() => setTab("employees")}
+              className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+                tab === "employees" ? "bg-[var(--brand)] text-white" : "bg-[var(--canvas)] text-[var(--muted)]"
+              }`}
+            >
+              ③ 임직원 사용 현황
+            </button>
           </div>
 
           {tab === "affiliates" ? (
             <AffiliatesPanel client={selectedClient} />
-          ) : (
+          ) : tab === "activation" ? (
             <ActivationPanel client={selectedClient} />
+          ) : (
+            <EmployeesPanel client={selectedClient} />
           )}
         </>
       )}
@@ -532,6 +543,177 @@ function ActivationPanel({ client }: { client: SalesClient }) {
                     </td>
                     <td className="py-2">
                       <button onClick={() => handleDelete(r.id)} className="text-xs text-[var(--negative)] underline">
+                        삭제
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+    </Card>
+  );
+}
+
+function EmployeesPanel({ client }: { client: SalesClient }) {
+  const [employees, setEmployees] = useState<SalesEmployee[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [employeeCode, setEmployeeCode] = useState("");
+  const [department, setDepartment] = useState("");
+  const [quarter, setQuarter] = useState("");
+  const [usageAmount, setUsageAmount] = useState("");
+
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [client.id]);
+
+  async function load() {
+    setLoading(true);
+    setError(null);
+    try {
+      const { employees } = await api<{ employees: SalesEmployee[] }>(
+        `/api/sales/employees?clientId=${client.id}`
+      );
+      setEmployees(employees);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "불러오기에 실패했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleAdd() {
+    if (!employeeCode.trim() || !quarter.trim()) return;
+    setError(null);
+    try {
+      const { employee } = await api<{ employee: SalesEmployee }>("/api/sales/employees", {
+        method: "POST",
+        body: JSON.stringify({
+          clientId: client.id,
+          employeeCode,
+          department,
+          quarter,
+          usageAmount: usageAmount ? Number(usageAmount) : 0,
+        }),
+      });
+      setEmployees((prev) => [...prev, employee]);
+      setEmployeeCode("");
+      setDepartment("");
+      setUsageAmount("");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "추가에 실패했습니다.");
+    }
+  }
+
+  async function handleDelete(id: number) {
+    setEmployees((prev) => prev.filter((e) => e.id !== id));
+    try {
+      await api(`/api/sales/employees?id=${id}`, { method: "DELETE" });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "삭제에 실패했습니다.");
+      load();
+    }
+  }
+
+  const activeCount = useMemo(() => employees.filter((e) => e.usage_amount > 0).length, [employees]);
+  const totalUsage = useMemo(() => employees.reduce((sum, e) => sum + e.usage_amount, 0), [employees]);
+  const avgUsage = employees.length > 0 ? Math.round(totalUsage / employees.length) : 0;
+
+  return (
+    <Card>
+      <SectionTitle
+        title={`${client.name}의 임직원 몰 사용 현황`}
+        subtitle="임직원 개인별 몰 사용 금액을 기록해 활성률의 근거 데이터로 활용합니다."
+      />
+
+      <div className="mb-4 flex flex-wrap items-end gap-2 rounded-lg border border-dashed border-[var(--border)] p-3">
+        <input
+          className={`${inputClass} w-32`}
+          placeholder="사번"
+          value={employeeCode}
+          onChange={(e) => setEmployeeCode(e.target.value)}
+        />
+        <input
+          className={`${inputClass} w-32`}
+          placeholder="부서"
+          value={department}
+          onChange={(e) => setDepartment(e.target.value)}
+        />
+        <input
+          className={`${inputClass} w-28`}
+          placeholder="분기 (예: 2026-Q2)"
+          value={quarter}
+          onChange={(e) => setQuarter(e.target.value)}
+        />
+        <input
+          className={`${inputClass} w-32`}
+          placeholder="사용금액(원)"
+          type="number"
+          value={usageAmount}
+          onChange={(e) => setUsageAmount(e.target.value)}
+        />
+        <PrimaryButton onClick={handleAdd}>추가</PrimaryButton>
+      </div>
+
+      {error && (
+        <div className="mb-3">
+          <ErrorNotice>{error}</ErrorNotice>
+        </div>
+      )}
+
+      {loading ? (
+        <p className="text-sm text-[var(--muted)]">불러오는 중...</p>
+      ) : employees.length === 0 ? (
+        <EmptyNotice>등록된 임직원 데이터가 없습니다.</EmptyNotice>
+      ) : (
+        <>
+          <div className="mb-4 grid grid-cols-3 gap-3 text-sm">
+            <div className="rounded-lg bg-[var(--canvas)] p-3">
+              <p className="text-[var(--muted)]">전체 인원</p>
+              <p className="text-lg font-bold text-[var(--ink)]">{employees.length}명</p>
+            </div>
+            <div className="rounded-lg bg-[var(--canvas)] p-3">
+              <p className="text-[var(--muted)]">활성 인원 (사용액&gt;0)</p>
+              <p className="text-lg font-bold text-[var(--positive)]">
+                {activeCount}명 ({Math.round((activeCount / employees.length) * 1000) / 10}%)
+              </p>
+            </div>
+            <div className="rounded-lg bg-[var(--canvas)] p-3">
+              <p className="text-[var(--muted)]">1인당 평균 사용액</p>
+              <p className="text-lg font-bold text-[var(--ink)]">{avgUsage.toLocaleString()}원</p>
+            </div>
+          </div>
+
+          <div className="max-h-[420px] overflow-y-auto overflow-x-auto">
+            <table className="w-full min-w-[480px] text-left text-sm">
+              <thead className="sticky top-0 bg-[var(--surface)] text-[var(--muted)]">
+                <tr>
+                  <th className="pb-2 pr-4">사번</th>
+                  <th className="pb-2 pr-4">부서</th>
+                  <th className="pb-2 pr-4">분기</th>
+                  <th className="pb-2 pr-4">사용금액</th>
+                  <th className="pb-2 pr-4">상태</th>
+                  <th className="pb-2"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {employees.map((emp) => (
+                  <tr key={emp.id} className="border-t border-[var(--border)]">
+                    <td className="py-2 pr-4 font-medium text-[var(--ink)]">{emp.employee_code}</td>
+                    <td className="py-2 pr-4">{emp.department || "-"}</td>
+                    <td className="py-2 pr-4">{emp.quarter}</td>
+                    <td className="py-2 pr-4">{emp.usage_amount.toLocaleString()}원</td>
+                    <td className="py-2 pr-4">
+                      <Badge tone={emp.usage_amount > 0 ? "positive" : "default"}>
+                        {emp.usage_amount > 0 ? "활성" : "미사용"}
+                      </Badge>
+                    </td>
+                    <td className="py-2">
+                      <button onClick={() => handleDelete(emp.id)} className="text-xs text-[var(--negative)] underline">
                         삭제
                       </button>
                     </td>
