@@ -76,3 +76,37 @@ export type Recommendation = {
   refTrend: string[];
   refSurvey: string;
 };
+
+export const AFFILIATE_STATUS_OPTIONS = ["미접촉", "제안중", "계약완료", "보류"] as const;
+export type AffiliateStatus = (typeof AFFILIATE_STATUS_OPTIONS)[number];
+
+export type SalesClient = {
+  id: number;
+  name: string;
+  fee_type: string | null;
+  created_at: string;
+};
+
+export type SalesAffiliate = {
+  id: number;
+  client_id: number;
+  name: string;
+  status: AffiliateStatus;
+  expected_revenue: number | null;
+  memo: string | null;
+  updated_at: string;
+};
+
+export type ActivationReport = {
+  id: number;
+  client_id: number;
+  country: string;
+  quarter: string;
+  target_count: number;
+  order_count: number;
+  reason_unknown: number;
+  reason_nothing_to_buy: number;
+  reason_distrust: number;
+  memo: string | null;
+  created_at: string;
+};

@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { href: "/", label: "홈", icon: IconHome },
   { href: "/research", label: "트렌드 리서치", icon: IconTrend },
   { href: "/survey", label: "설문 분석", icon: IconSurvey },
+  { href: "/sales", label: "영업 관리", icon: IconBriefcase },
 ];
 
 function IconHome({ className }: { className?: string }) {
@@ -36,6 +37,16 @@ function IconSurvey({ className }: { className?: string }) {
     <svg viewBox="0 0 20 20" fill="none" className={className}>
       <rect x="4" y="3" width="12" height="14" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
       <path d="M7 7.5h6M7 10.5h6M7 13.5h3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function IconBriefcase({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className={className}>
+      <rect x="2.5" y="6.5" width="15" height="9.5" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M7 6.5V5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 13 5v1.5" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M2.5 10.5h15" stroke="currentColor" strokeWidth="1.4" />
     </svg>
   );
 }
