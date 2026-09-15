@@ -1,0 +1,139 @@
+import { NextRequest, NextResponse } from "next/server";
+import curatedData from "@/data/trend-research.json";
+import { BUDGET_CEILING, CATEGORY_SEASON_REASON } from "@/lib/constants";
+import type { TrendItem } from "@/lib/types";
+
+type CuratedItem = Omit<TrendItem, "target">;
+
+const CURATED: Record<string, CuratedItem[]> = curatedData;
+
+const CATEGORY_KEYWORD_MAP: { category: string; keywords: string[] }[] = [
+  { category: "식품", keywords: ["식품", "과일", "한우", "건강식품", "홍삼", "차", "커피", "음료", "육류", "먹거리"] },
+  { category: "생활용품", keywords: ["생활", "주방", "리빙", "수건", "세제", "가전", "홈"] },
+  { category: "디지털", keywords: ["디지털", "전자", "이어폰", "충전", "블루투스", "가전제품"] },
+  { category: "패션", keywords: ["패션", "의류", "지갑", "가방", "잡화", "스카프", "넥타이"] },
+  { category: "문구", keywords: ["문구", "다이어리", "필기", "노트", "펜"] },
+];
+
+function classifyCategory(title: string, naverCategory: string): string {
+  const haystack = `${title} ${naverCategory}`;
+  for (const { category, keywords } of CATEGORY_KEYWORD_MAP) {
+    if (keywords.some((k) => haystack.includes(k))) return category;
+  }
+  return "기타";
+}
+
+function stripHtml(text: string): string {
+  return text.replace(/<[^>]*>/g, "");
+}
+
+function formatPriceRange(price: number): string {
+  if (price <= 0) return "가격 정보 없음";
+  const man = Math.round(price / 1000) / 10;
+  return `약 ${man}만원`;
+}
+
+/**
+ * 네이버 검색(쇼핑) API가 연결된 경우에만 사용하는 실시간 검색 경로.
+ * 지금은 큐레이션 데이터셋(CURATED)이 기본 경로이며, 이 함수는 사전 조사 데이터에 없는
+ * 시즌(직접 입력 등)을 위한 보조 수단으로만 호출된다.
+ */
+async function fetchFromNaver(season: string, budget?: string): Promise<TrendItem[] | { error: string; status: number }> {
+  const clientId = process.env.NAVER_CLIENT_ID;
+  const clientSecret = process.env.NAVER_CLIENT_SECRET;
+  if (!clientId || !clientSecret) {
+    return { error: "NO_KEY", status: 501 };
+  }
+
+  const query = `${season} 기업 선물${budget ? ` ${budget}` : ""}`;
+  let res: Response;
+  try {
+    res = await fetch(
+      `https://openapi.naver.com/v1/search/shop.json?query=${encodeURIComponent(query)}&display=20&sort=sim`,
+      {
+        headers: { "X-Naver-Client-Id": clientId, "X-Naver-Client-Secret": clientSecret },
+        cache: "no-store",
+      }
+    );
+  } catch {
+    return { error: "검색 서버에 연결하지 못했습니다.", status: 502 };
+  }
+  if (!res.ok) {
+    return { error: `네이버 검색 API 호출에 실패했습니다 (status ${res.status}).`, status: 502 };
+  }
+  const data = await res.json();
+  const rawItems: Array<{ title: string; link: string; lprice: string; category1?: string; category2?: string }> =
+    data.items ?? [];
+  if (rawItems.length === 0) {
+    return { error: "검색 결과가 없습니다.", status: 404 };
+  }
+  return rawItems.map((raw) => {
+    const title = stripHtml(raw.title);
+    const category = classifyCategory(title, `${raw.category1 ?? ""} ${raw.category2 ?? ""}`);
+    const priceValue = Number(raw.lprice) || null;
+    return {
+      name: title,
+      category,
+      priceRange: priceValue ? formatPriceRange(priceValue) : "가격 정보 없음",
+      priceValue,
+      reason: CATEGORY_SEASON_REASON[category] ?? CATEGORY_SEASON_REASON["기타"],
+      target: "전체 임직원",
+      source: raw.link,
+    };
+  });
+}
+
+export async function POST(req: NextRequest) {
+  const body = await req.json().catch(() => null);
+  const season: string = body?.season?.trim();
+  const budget: string | undefined = body?.budget?.trim() || undefined;
+
+  if (!season) {
+    return NextResponse.json({ error: "시즌/이벤트를 입력해주세요." }, { status: 400 });
+  }
+
+  const curatedItems = CURATED[season];
+
+  if (curatedItems) {
+    const ceiling = budget ? BUDGET_CEILING[budget] : undefined;
+    const items: TrendItem[] = curatedItems
+      .map((item) => ({ ...item, target: "전체 임직원" }))
+      .sort((a, b) => {
+        if (ceiling === undefined) return 0;
+        const aFits = a.priceValue !== null && a.priceValue <= ceiling ? 0 : 1;
+        const bFits = b.priceValue !== null && b.priceValue <= ceiling ? 0 : 1;
+        return aFits - bFits;
+      });
+
+    return NextResponse.json({
+      season,
+      budget: budget ?? "",
+      items,
+      fetchedAt: new Date().toISOString(),
+      dataSource: "curated",
+    });
+  }
+
+  // 사전 조사 데이터에 없는 시즌(직접 입력 등) — 네이버 API 키가 있으면 실시간 검색을 시도하고,
+  // 없으면 가짜 데이터를 만들지 않고 정직하게 오류를 안내한다.
+  const naverResult = await fetchFromNaver(season, budget);
+  if ("error" in naverResult) {
+    if (naverResult.status === 501) {
+      return NextResponse.json(
+        {
+          error: `"${season}"에 대한 사전 조사 데이터가 없습니다. 사전 정의된 시즌(설날/추석/입학/졸업/여름휴가/연말/입사/승진) 중에서 선택하거나, 네이버 검색 API 키를 등록하면 이 시즌도 검색할 수 있습니다.`,
+        },
+        { status: 404 }
+      );
+    }
+    return NextResponse.json({ error: naverResult.error }, { status: naverResult.status });
+  }
+
+  return NextResponse.json({
+    season,
+    budget: budget ?? "",
+    items: naverResult,
+    fetchedAt: new Date().toISOString(),
+    dataSource: "naver-live",
+  });
+}

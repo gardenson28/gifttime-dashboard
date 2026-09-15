@@ -1,0 +1,298 @@
+{
+  "설날": [
+    {
+      "name": "한우 선물세트",
+      "category": "식품",
+      "priceRange": "10만원 이상",
+      "priceValue": 150000,
+      "reason": "높은 가격대로 평소 접하기 어려운 상품이라 직장인들이 가장 선호하는 명절 선물로 꼽힙니다.",
+      "source": "https://inblog.ai/giftishowbiz/%EC%8B%A4%EC%86%8D%EA%B3%BC-%EB%A7%88%EC%9D%8C%EC%9D%84-%EB%8B%B4%EC%9D%80-%ED%9A%8C%EC%82%AC-%EC%84%A4-%EC%84%A0%EB%AC%BC-%EC%B6%94%EC%B2%9C-%EC%9E%84%EC%A7%81%EC%9B%90%EC%9D%B4-%EB%AA%A8%EB%91%90-%EB%A7%8C%EC%A1%B1%ED%95%98%EB%8A%94-%ED%8A%B9%EB%B3%84%ED%95%9C-%EC%84%A0%ED%83%9D-40467"
+    },
+    {
+      "name": "찹쌀떡·영양찰떡 선물세트",
+      "category": "식품",
+      "priceRange": "1만~3만원",
+      "priceValue": 20000,
+      "reason": "여러 종류의 떡을 함께 맛볼 수 있어 부담 없이 선택하기 좋은 명절 선물로 소개됩니다.",
+      "source": "https://inblog.ai/giftishowbiz/%EC%8B%A4%EC%86%8D%EA%B3%BC-%EB%A7%88%EC%9D%8C%EC%9D%84-%EB%8B%B4%EC%9D%80-%ED%9A%8C%EC%82%AC-%EC%84%A4-%EC%84%A0%EB%AC%BC-%EC%B6%94%EC%B2%9C-%EC%9E%84%EC%A7%81%EC%9B%90%EC%9D%B4-%EB%AA%A8%EB%91%90-%EB%A7%8C%EC%A1%B1%ED%95%98%EB%8A%94-%ED%8A%B9%EB%B3%84%ED%95%9C-%EC%84%A0%ED%83%9D-40467"
+    },
+    {
+      "name": "참치·햄·식용유 종합 선물세트",
+      "category": "식품",
+      "priceRange": "3만~5만원",
+      "priceValue": 40000,
+      "reason": "실생활에서 바로 활용할 수 있는 대표적인 명절 실속 선물 구성으로 언급됩니다.",
+      "source": "https://inblog.ai/giftishowbiz/%EC%8B%A4%EC%86%8D%EA%B3%BC-%EB%A7%88%EC%9D%8C%EC%9D%84-%EB%8B%B4%EC%9D%80-%ED%9A%8C%EC%82%AC-%EC%84%A4-%EC%84%A0%EB%AC%BC-%EC%B6%94%EC%B2%9C-%EC%9E%84%EC%A7%81%EC%9B%90%EC%9D%B4-%EB%AA%A8%EB%91%90-%EB%A7%8C%EC%A1%B1%ED%95%98%EB%8A%94-%ED%8A%B9%EB%B3%84%ED%95%9C-%EC%84%A0%ED%83%9D-40467"
+    },
+    {
+      "name": "고급 국수 선물세트",
+      "category": "식품",
+      "priceRange": "1만~3만원",
+      "priceValue": 20000,
+      "reason": "명절 실속 선물로 꾸준히 사랑받는 상품으로 소개됩니다.",
+      "source": "https://inblog.ai/giftishowbiz/%EC%8B%A4%EC%86%8D%EA%B3%BC-%EB%A7%88%EC%9D%8C%EC%9D%84-%EB%8B%B4%EC%9D%80-%ED%9A%8C%EC%82%AC-%EC%84%A4-%EC%84%A0%EB%AC%BC-%EC%B6%94%EC%B2%9C-%EC%9E%84%EC%A7%81%EC%9B%90%EC%9D%B4-%EB%AA%A8%EB%91%90-%EB%A7%8C%EC%A1%B1%ED%95%98%EB%8A%94-%ED%8A%B9%EB%B3%84%ED%95%9C-%EC%84%A0%ED%83%9D-40467"
+    },
+    {
+      "name": "한과 선물세트",
+      "category": "식품",
+      "priceRange": "1만~3만원",
+      "priceValue": 20000,
+      "reason": "전통적인 명절 분위기를 살리는 선물로 선호도가 높다고 소개됩니다.",
+      "source": "https://inblog.ai/giftishowbiz/%EC%8B%A4%EC%86%8D%EA%B3%BC-%EB%A7%88%EC%9D%8C%EC%9D%84-%EB%8B%B4%EC%9D%80-%ED%9A%8C%EC%82%AC-%EC%84%A4-%EC%84%A0%EB%AC%BC-%EC%B6%94%EC%B2%9C-%EC%9E%84%EC%A7%81%EC%9B%90%EC%9D%B4-%EB%AA%A8%EB%91%90-%EB%A7%8C%EC%A1%B1%ED%95%98%EB%8A%94-%ED%8A%B9%EB%B3%84%ED%95%9C-%EC%84%A0%ED%83%9D-40467"
+    },
+    {
+      "name": "선택형 모바일 상품권(기프티콘) 세트",
+      "category": "기타",
+      "priceRange": "1만~3만원",
+      "priceValue": 20000,
+      "reason": "생필품 세트에 대한 선호는 줄고, 원하는 상품을 직접 고를 수 있는 선택형 선물의 선호도가 높아지는 추세로 소개됩니다.",
+      "source": "https://inblog.ai/giftishowbiz/%EC%8B%A4%EC%86%8D%EA%B3%BC-%EB%A7%88%EC%9D%8C%EC%9D%84-%EB%8B%B4%EC%9D%80-%ED%9A%8C%EC%82%AC-%EC%84%A4-%EC%84%A0%EB%AC%BC-%EC%B6%94%EC%B2%9C-%EC%9E%84%EC%A7%81%EC%9B%90%EC%9D%B4-%EB%AA%A8%EB%91%90-%EB%A7%8C%EC%A1%B1%ED%95%98%EB%8A%94-%ED%8A%B9%EB%B3%84%ED%95%9C-%EC%84%A0%ED%83%9D-40467"
+    }
+  ],
+  "추석": [
+    {
+      "name": "홍삼·비타민 등 건강기능식품 세트",
+      "category": "식품",
+      "priceRange": "3만~5만원",
+      "priceValue": 40000,
+      "reason": "'직원의 건강까지 챙기는 세심한 기업'이라는 인상을 줄 수 있어 명절 선물로 인기가 높습니다.",
+      "source": "https://sendbee.co.kr/archive/%EA%B8%B0%EC%97%85-%EC%A7%81%EC%9B%90-%EC%84%A0%EB%AC%BC-%EC%84%A0%ED%83%9D-%EA%B0%80%EC%9D%B4%EB%93%9C-%EC%83%81%ED%99%A9%EB%B3%84-%EC%B6%94%EC%B2%9C-%EC%98%88%EC%82%B0%EB%B3%84/"
+    },
+    {
+      "name": "참기름·들기름·김 세트",
+      "category": "식품",
+      "priceRange": "1만~3만원",
+      "priceValue": 20000,
+      "reason": "요리에 바로 쓸 수 있는 실속형 명절 선물로 부담이 적다고 소개됩니다.",
+      "source": "https://www.sano.co.kr/2026-%EC%A7%81%EC%9E%A5-%EC%B6%94%EC%84%9D-%EC%84%A0%EB%AC%BC-%EC%B6%94%EC%B2%9C-%EC%B4%9D%EC%A0%95%EB%A6%AC"
+    },
+    {
+      "name": "양갱·식용유 선물세트",
+      "category": "식품",
+      "priceRange": "1만원 이하",
+      "priceValue": 8000,
+      "reason": "1만~2만원대에서 가장 부담 없이 선택할 수 있는 명절 선물로 소개됩니다.",
+      "source": "https://sendbee.co.kr/archive/%EA%B8%B0%EC%97%85-%EC%A7%81%EC%9B%90-%EC%84%A0%EB%AC%BC-%EC%84%A0%ED%83%9D-%EA%B0%80%EC%9D%B4%EB%93%9C-%EC%83%81%ED%99%A9%EB%B3%84-%EC%B6%94%EC%B2%9C-%EC%98%88%EC%82%B0%EB%B3%84/"
+    }
+  ],
+  "여름휴가": [
+    {
+      "name": "지역 특산품 세트 (오메기떡·어묵 등)",
+      "category": "식품",
+      "priceRange": "1만~3만원",
+      "priceValue": 20000,
+      "reason": "휴가지 특산품을 팀원들과 나누는 선물로 선호도가 높다고 소개됩니다.",
+      "source": "https://brunch.co.kr/@dprnrn234/98"
+    },
+    {
+      "name": "열쇠고리·비누·치약 등 실용 소품 세트",
+      "category": "생활용품",
+      "priceRange": "1만원 이하",
+      "priceValue": 8000,
+      "reason": "금전적으로 부담이 덜하면서도 받는 입장에서 잘 쓸 수 있는 선물로 소개됩니다.",
+      "source": "https://brunch.co.kr/@dprnrn234/98"
+    },
+    {
+      "name": "미니 립밤·핸드크림 세트",
+      "category": "패션",
+      "priceRange": "1만~3만원",
+      "priceValue": 20000,
+      "reason": "여행지에서 부담 없이 구매해 나눠주기 좋은 선물로 언급됩니다.",
+      "source": "https://brunch.co.kr/@dprnrn234/98"
+    },
+    {
+      "name": "브랜드 단체 굿즈 세트",
+      "category": "생활용품",
+      "priceRange": "3만~5만원",
+      "priceValue": 40000,
+      "reason": "여름 시즌 워크샵·사내 행사용 단체 선물로 기획되는 경우가 많다고 소개됩니다.",
+      "source": "https://www.sumthing.co.kr/magazine/?bmode=view&idx=165053571"
+    }
+  ],
+  "연말": [
+    {
+      "name": "맞춤 제작 다이어리",
+      "category": "문구",
+      "priceRange": "1만~3만원",
+      "priceValue": 20000,
+      "reason": "브랜드 이미지를 담아 제작하는 연말 선물로 최근 트렌드로 소개됩니다.",
+      "source": "https://www.sumthing.co.kr/magazine/?bmode=view&idx=168403637"
+    },
+    {
+      "name": "데스크 캘린더",
+      "category": "문구",
+      "priceRange": "1만원 이하",
+      "priceValue": 8000,
+      "reason": "빠른 제작이 가능해 연말 일정에 맞춰 준비하기 좋은 선물로 소개됩니다.",
+      "source": "https://taragrp.co.kr/diary-calender-service/"
+    },
+    {
+      "name": "다이어리+캘린더 세트",
+      "category": "문구",
+      "priceRange": "3만~5만원",
+      "priceValue": 40000,
+      "reason": "고급스러운 연말 선물로 세트 구성이 늘어나는 추세라고 소개됩니다.",
+      "source": "https://www.sumthing.co.kr/magazine/?bmode=view&idx=168403637"
+    },
+    {
+      "name": "브랜드 커스텀 다이어리 (몰스킨 등)",
+      "category": "문구",
+      "priceRange": "5만~10만원",
+      "priceValue": 70000,
+      "reason": "유명 브랜드에 커스터마이징을 더한 고급 연말 선물로 언급됩니다.",
+      "source": "https://www.sumthing.co.kr/magazine/?bmode=view&idx=168403637"
+    },
+    {
+      "name": "브랜드 텀블러 (스타벅스·락앤락 등)",
+      "category": "생활용품",
+      "priceRange": "3만~5만원",
+      "priceValue": 40000,
+      "reason": "실용적이면서도 고급스러운 느낌을 줘 연말 선물로 인기가 높은 브랜드 텀블러로 소개됩니다.",
+      "source": "https://wise-saying.com/%EC%A7%81%EC%9B%90-%ED%9A%8C%EC%82%AC-%EC%86%A1%EB%85%84%ED%9A%8C-%EC%97%B0%EB%A7%90-%EB%8B%A8%EC%B2%B4%EC%84%A0%EB%AC%BC/"
+    },
+    {
+      "name": "무선 충전기",
+      "category": "디지털",
+      "priceRange": "3만~5만원",
+      "priceValue": 40000,
+      "reason": "요즘 필수품으로 자리 잡아 트렌디하고 실용적인 연말 선물로 소개됩니다.",
+      "source": "https://wise-saying.com/%EC%A7%81%EC%9B%90-%ED%9A%8C%EC%82%AC-%EC%86%A1%EB%85%84%ED%9A%8C-%EC%97%B0%EB%A7%90-%EB%8B%A8%EC%B2%B4%EC%84%A0%EB%AC%BC/"
+    }
+  ],
+  "입학": [
+    {
+      "name": "노이즈캔슬링 이어폰",
+      "category": "디지털",
+      "priceRange": "10만원 이상",
+      "priceValue": 150000,
+      "reason": "캠퍼스 생활에 유용한 아이템으로 입학 선물로 언급됩니다.",
+      "source": "https://www.dealsfor.me/Blog/2025-jol-eobsig-seonmul-chucheon-sil-yongjeog-igo-gamdongjeog-in-wanbyeog-gaideu"
+    },
+    {
+      "name": "보온보냉 텀블러",
+      "category": "생활용품",
+      "priceRange": "1만~3만원",
+      "priceValue": 20000,
+      "reason": "캠퍼스 어디서든 활용 가능한 실용적인 입학 선물로 소개됩니다.",
+      "source": "https://www.dealsfor.me/Blog/2025-jol-eobsig-seonmul-chucheon-sil-yongjeog-igo-gamdongjeog-in-wanbyeog-gaideu"
+    },
+    {
+      "name": "생산성 앱 구독권",
+      "category": "디지털",
+      "priceRange": "1만~3만원",
+      "priceValue": 20000,
+      "reason": "새 학기 학습 관리에 도움이 되는 선물로 언급됩니다.",
+      "source": "https://www.dealsfor.me/Blog/2025-jol-eobsig-seonmul-chucheon-sil-yongjeog-igo-gamdongjeog-in-wanbyeog-gaideu"
+    },
+    {
+      "name": "미니멀 백팩",
+      "category": "패션",
+      "priceRange": "3만~5만원",
+      "priceValue": 40000,
+      "reason": "새 학기 통학용으로 바로 활용 가능한 선물로 소개됩니다.",
+      "source": "https://www.dealsfor.me/Blog/2025-jol-eobsig-seonmul-chucheon-sil-yongjeog-igo-gamdongjeog-in-wanbyeog-gaideu"
+    }
+  ],
+  "졸업": [
+    {
+      "name": "무선 이어폰",
+      "category": "디지털",
+      "priceRange": "5만~10만원",
+      "priceValue": 70000,
+      "reason": "통학·학습에 바로 활용할 수 있어 만족도가 높은 졸업 선물로 소개됩니다.",
+      "source": "https://www.dealsfor.me/Blog/2025-jol-eobsig-seonmul-chucheon-sil-yongjeog-igo-gamdongjeog-in-wanbyeog-gaideu"
+    },
+    {
+      "name": "스테인리스 텀블러",
+      "category": "생활용품",
+      "priceRange": "1만~3만원",
+      "priceValue": 20000,
+      "reason": "실생활에서 꾸준히 쓸 수 있는 실용적인 졸업 선물로 언급됩니다.",
+      "source": "https://www.dealsfor.me/Blog/2025-jol-eobsig-seonmul-chucheon-sil-yongjeog-igo-gamdongjeog-in-wanbyeog-gaideu"
+    },
+    {
+      "name": "가벼운 백팩",
+      "category": "패션",
+      "priceRange": "3만~5만원",
+      "priceValue": 40000,
+      "reason": "통학·출근 등 다음 단계 생활에 바로 활용 가능한 선물로 소개됩니다.",
+      "source": "https://www.dealsfor.me/Blog/2025-jol-eobsig-seonmul-chucheon-sil-yongjeog-igo-gamdongjeog-in-wanbyeog-gaideu"
+    },
+    {
+      "name": "디지털 노트",
+      "category": "디지털",
+      "priceRange": "5만~10만원",
+      "priceValue": 70000,
+      "reason": "필기와 학습을 디지털로 전환해주는 실용적인 졸업 선물로 소개됩니다.",
+      "source": "https://www.dealsfor.me/Blog/2025-jol-eobsig-seonmul-chucheon-sil-yongjeog-igo-gamdongjeog-in-wanbyeog-gaideu"
+    }
+  ],
+  "입사": [
+    {
+      "name": "회사 굿즈 세트 (에코백+볼펜+커피쿠폰)",
+      "category": "생활용품",
+      "priceRange": "1만~3만원",
+      "priceValue": 20000,
+      "reason": "신입사원 환영을 위한 기본 구성으로 자주 활용되는 선물 세트로 소개됩니다.",
+      "source": "https://sendbee.co.kr/archive/2025%EB%85%84-%EC%8B%A0%EA%B7%9C-%EC%9E%85%EC%82%AC%EC%9E%90%EB%A5%BC-%EC%9C%84%ED%95%9C-%EC%84%BC%EC%8A%A4%EC%9E%88%EB%8A%94-%EC%9E%85%EC%82%AC-%EC%84%A0%EB%AC%BC-%EC%B6%94%EC%B2%9C/"
+    },
+    {
+      "name": "아로마 디퓨저 힐링 세트",
+      "category": "생활용품",
+      "priceRange": "3만~5만원",
+      "priceValue": 40000,
+      "reason": "새로운 환경 적응을 돕는 힐링 선물로 소개됩니다.",
+      "source": "https://sendbee.co.kr/archive/2025%EB%85%84-%EC%8B%A0%EA%B7%9C-%EC%9E%85%EC%82%AC%EC%9E%90%EB%A5%BC-%EC%9C%84%ED%95%9C-%EC%84%BC%EC%8A%A4%EC%9E%88%EB%8A%94-%EC%9E%85%EC%82%AC-%EC%84%A0%EB%AC%BC-%EC%B6%94%EC%B2%9C/"
+    },
+    {
+      "name": "선 충전기+손목보호쿠션 세트",
+      "category": "디지털",
+      "priceRange": "3만~5만원",
+      "priceValue": 40000,
+      "reason": "업무 환경 적응을 지원하는 실용적인 입사 선물로 소개됩니다.",
+      "source": "https://sendbee.co.kr/archive/2025%EB%85%84-%EC%8B%A0%EA%B7%9C-%EC%9E%85%EC%82%AC%EC%9E%90%EB%A5%BC-%EC%9C%84%ED%95%9C-%EC%84%BC%EC%8A%A4%EC%9E%88%EB%8A%94-%EC%9E%85%EC%82%AC-%EC%84%A0%EB%AC%BC-%EC%B6%94%EC%B2%9C/"
+    },
+    {
+      "name": "무선 마우스·키보드",
+      "category": "디지털",
+      "priceRange": "5만~10만원",
+      "priceValue": 70000,
+      "reason": "사회초년생의 업무용 실용 선물로 언급됩니다.",
+      "source": "https://www.dealsfor.me/Blog/2025-jol-eobsig-seonmul-chucheon-sil-yongjeog-igo-gamdongjeog-in-wanbyeog-gaideu"
+    }
+  ],
+  "승진": [
+    {
+      "name": "고급 만년필·볼펜",
+      "category": "문구",
+      "priceRange": "5만~10만원",
+      "priceValue": 70000,
+      "reason": "직급이 올라갈수록 서명할 일이 늘어나 축하와 실용성을 함께 갖춘 선물로 꼽힙니다.",
+      "source": "https://www.sumthing.co.kr/magazine/?bmode=view&idx=165421404"
+    },
+    {
+      "name": "이름 각인 고급 다이어리",
+      "category": "문구",
+      "priceRange": "3만~5만원",
+      "priceValue": 40000,
+      "reason": "새로운 역할의 일정 관리에 유용하며 이름·직책 각인으로 특별함을 더할 수 있는 선물로 소개됩니다.",
+      "source": "https://www.sumthing.co.kr/magazine/?bmode=view&idx=165421404"
+    },
+    {
+      "name": "홍삼·영양제 세트",
+      "category": "식품",
+      "priceRange": "3만~5만원",
+      "priceValue": 40000,
+      "reason": "축하와 함께 건강까지 챙기는 선물로 인기가 높다고 소개됩니다.",
+      "source": "https://irondle.com/entry/%EC%8A%B9%EC%A7%84-%EC%B6%95%ED%95%98-%EC%84%A0%EB%AC%BC-%EC%B6%94%EC%B2%9C-BEST-10"
+    },
+    {
+      "name": "무선 마사지기",
+      "category": "디지털",
+      "priceRange": "5만~10만원",
+      "priceValue": 70000,
+      "reason": "목·어깨·눈 피로를 풀어주는 선물로 승진 축하 선물 중 인기가 높다고 소개됩니다.",
+      "source": "https://irondle.com/entry/%EC%8A%B9%EC%A7%84-%EC%B6%95%ED%95%98-%EC%84%A0%EB%AC%BC-%EC%B6%94%EC%B2%9C-BEST-10"
+    }
+  ]
+}
