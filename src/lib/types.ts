@@ -103,7 +103,6 @@ export type SalesEmployee = {
   employee_code: string;
   department: string | null;
   country: string | null;
-  quarter: string;
   usage_amount: number;
   allocated_points: number;
   created_at: string;

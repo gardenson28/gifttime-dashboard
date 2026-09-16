@@ -370,7 +370,6 @@ function EmployeesPanel({ client }: { client: SalesClient }) {
   const [employeeCode, setEmployeeCode] = useState("");
   const [department, setDepartment] = useState("");
   const [country, setCountry] = useState("");
-  const [quarter, setQuarter] = useState("");
   const [usageAmount, setUsageAmount] = useState("");
   const [allocatedPoints, setAllocatedPoints] = useState("300000");
 
@@ -395,7 +394,7 @@ function EmployeesPanel({ client }: { client: SalesClient }) {
   }
 
   async function handleAdd() {
-    if (!employeeCode.trim() || !quarter.trim()) return;
+    if (!employeeCode.trim()) return;
     setError(null);
     try {
       const { employee } = await api<{ employee: SalesEmployee }>("/api/sales/employees", {
@@ -405,7 +404,6 @@ function EmployeesPanel({ client }: { client: SalesClient }) {
           employeeCode,
           department,
           country,
-          quarter,
           usageAmount: usageAmount ? Number(usageAmount) : 0,
           allocatedPoints: allocatedPoints ? Number(allocatedPoints) : 300000,
         }),
@@ -487,12 +485,6 @@ function EmployeesPanel({ client }: { client: SalesClient }) {
           onChange={(e) => setCountry(e.target.value)}
         />
         <input
-          className={`${inputClass} w-28`}
-          placeholder="분기 (예: 2026-Q2)"
-          value={quarter}
-          onChange={(e) => setQuarter(e.target.value)}
-        />
-        <input
           className={`${inputClass} w-32`}
           placeholder="사용금액(원)"
           type="number"
@@ -567,13 +559,12 @@ function EmployeesPanel({ client }: { client: SalesClient }) {
           </div>
 
           <div className="max-h-[420px] overflow-y-auto overflow-x-auto">
-            <table className="w-full min-w-[720px] text-left text-sm">
+            <table className="w-full min-w-[640px] text-left text-sm">
               <thead className="sticky top-0 bg-[var(--surface)] text-[var(--muted)]">
                 <tr>
                   <th className="pb-2 pr-4">사번</th>
                   <th className="pb-2 pr-4">부서</th>
                   <th className="pb-2 pr-4">국가</th>
-                  <th className="pb-2 pr-4">분기</th>
                   <th className="pb-2 pr-4">지급 포인트</th>
                   <th className="pb-2 pr-4">사용금액</th>
                   <th className="pb-2 pr-4">사용률</th>
@@ -589,7 +580,6 @@ function EmployeesPanel({ client }: { client: SalesClient }) {
                       <td className="py-2 pr-4 font-medium text-[var(--ink)]">{emp.employee_code}</td>
                       <td className="py-2 pr-4">{emp.department || "-"}</td>
                       <td className="py-2 pr-4">{emp.country || "-"}</td>
-                      <td className="py-2 pr-4">{emp.quarter}</td>
                       <td className="py-2 pr-4">{emp.allocated_points.toLocaleString()}원</td>
                       <td className="py-2 pr-4">{emp.usage_amount.toLocaleString()}원</td>
                       <td className="py-2 pr-4 font-semibold text-[var(--brand-hover)]">

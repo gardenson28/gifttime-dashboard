@@ -56,7 +56,6 @@ COMPANIES = {
 
 STATUS_WEIGHTS = [("미접촉", 4), ("제안중", 3), ("계약완료", 2), ("보류", 1)]
 COUNTRIES = ["한국", "베트남", "인도네시아", "중국", "미국", "인도"]
-QUARTERS = ["2026-Q1", "2026-Q2"]
 DEPARTMENTS = ["국내영업1팀", "국내영업2팀", "해외영업팀", "마케팅팀", "경영지원팀", "구매팀"]
 EMPLOYEE_ALLOCATED_POINTS = 300000  # 분기별 지급 포인트(원), 전사 공통
 MIN_AFFILIATES = 10
@@ -107,7 +106,7 @@ def main():
                 (client_id, aff_name, status, revenue, memo),
             )
 
-        # 임직원별 포인트 사용 현황 (최신 분기 기준)
+        # 임직원별 포인트 사용 현황
         employee_count = random.randint(15, 30)
         for i in range(1, employee_count + 1):
             code = f"{company_name[:2]}-EMP{i:03d}"
@@ -117,9 +116,9 @@ def main():
             usage = random.randint(10, EMPLOYEE_ALLOCATED_POINTS // 1000) * 1000 if is_active else 0
             cur.execute(
                 """INSERT INTO sales_employees
-                   (client_id, employee_code, department, country, quarter, usage_amount, allocated_points)
-                   VALUES (%s, %s, %s, %s, %s, %s, %s)""",
-                (client_id, code, dept, country, QUARTERS[-1], usage, EMPLOYEE_ALLOCATED_POINTS),
+                   (client_id, employee_code, department, country, usage_amount, allocated_points)
+                   VALUES (%s, %s, %s, %s, %s, %s)""",
+                (client_id, code, dept, country, usage, EMPLOYEE_ALLOCATED_POINTS),
             )
 
     cur.execute("SELECT count(*) FROM sales_clients")

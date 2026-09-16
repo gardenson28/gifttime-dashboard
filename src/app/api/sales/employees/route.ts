@@ -13,9 +13,9 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
-  const { clientId, employeeCode, department, country, quarter, usageAmount, allocatedPoints } = body ?? {};
-  if (!clientId || !employeeCode?.trim() || !quarter?.trim()) {
-    return NextResponse.json({ error: "고객사, 사번, 분기는 필수입니다." }, { status: 400 });
+  const { clientId, employeeCode, department, country, usageAmount, allocatedPoints } = body ?? {};
+  if (!clientId || !employeeCode?.trim()) {
+    return NextResponse.json({ error: "고객사, 사번은 필수입니다." }, { status: 400 });
   }
   const supabase = getSupabaseServer();
   const { data, error } = await supabase
@@ -25,7 +25,6 @@ export async function POST(req: NextRequest) {
       employee_code: employeeCode.trim(),
       department: department || null,
       country: country || null,
-      quarter: quarter.trim(),
       usage_amount: usageAmount || 0,
       allocated_points: allocatedPoints || 300000,
     })
