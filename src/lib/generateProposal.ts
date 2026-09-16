@@ -214,7 +214,7 @@ export async function downloadProposalDocx(
             border: { top: { style: BorderStyle.SINGLE, size: 4, color: LINE, space: 8 } },
             children: [
               new TextRun({
-                text: "본 제안서는 선물 트렌드 분석 대시보드에서 자동 생성되었습니다.",
+                text: "본 제안서는 이트너스 대시보드에서 자동 생성되었습니다.",
                 size: 16,
                 italics: true,
                 font: FONT,

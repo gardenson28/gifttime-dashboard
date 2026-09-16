@@ -1,45 +1,32 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import type { ReactNode } from "react";
 
-const NAV_ITEMS = [
-  { href: "/", label: "홈", icon: IconHome },
-  { href: "/research", label: "트렌드 리서치", icon: IconTrend },
-  { href: "/survey", label: "설문 분석", icon: IconSurvey },
-  { href: "/sales", label: "영업 관리", icon: IconBriefcase },
+type NavChild = { href: string; label: string; match: (pathname: string, tab: string | null) => boolean };
+type NavGroup = { label: string; icon: (props: { className?: string }) => ReactNode; children: NavChild[] };
+
+const NAV_GROUPS: NavGroup[] = [
+  {
+    label: "트렌드 선물 제안",
+    icon: IconGift,
+    children: [
+      { href: "/research", label: "트렌드 리서치", match: (p) => p === "/research" },
+      { href: "/survey", label: "설문 분석", match: (p) => p === "/survey" },
+      { href: "/recommend", label: "매칭 추천", match: (p) => p === "/recommend" },
+    ],
+  },
+  {
+    label: "영업 관리",
+    icon: IconBriefcase,
+    children: [
+      { href: "/sales?tab=affiliates", label: "계열사 확산", match: (p, tab) => p === "/sales" && (tab === null || tab === "affiliates") },
+      { href: "/sales?tab=activation", label: "활성률 리포트", match: (p, tab) => p === "/sales" && tab === "activation" },
+      { href: "/sales?tab=employees", label: "임직원 사용 현황", match: (p, tab) => p === "/sales" && tab === "employees" },
+    ],
+  },
 ];
-
-function IconHome({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 20 20" fill="none" className={className}>
-      <path
-        d="M3 9.5 10 4l7 5.5V16a1 1 0 0 1-1 1h-3.5a.5.5 0 0 1-.5-.5V13a2 2 0 0 0-4 0v3.5a.5.5 0 0 1-.5.5H4a1 1 0 0 1-1-1V9.5Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function IconTrend({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 20 20" fill="none" className={className}>
-      <path d="M3 16.5V11m5 5.5V7m5 9.5v-6m5 6V4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function IconSurvey({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 20 20" fill="none" className={className}>
-      <rect x="4" y="3" width="12" height="14" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M7 7.5h6M7 10.5h6M7 13.5h3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
-}
 
 function IconBriefcase({ className }: { className?: string }) {
   return (
@@ -68,31 +55,40 @@ function IconGift({ className }: { className?: string }) {
 
 function Logo() {
   return (
-    <div className="flex items-center gap-2">
+    <Link href="/" className="flex items-center gap-2">
       <span className="flex h-7 w-7 flex-none items-center justify-center rounded-md bg-white/15">
         <IconGift className="h-4 w-4 text-white" />
       </span>
-      <span className="text-[15px] font-bold tracking-tight text-white">선물 트렌드 분석</span>
-    </div>
+      <span className="text-[15px] font-bold tracking-tight text-white">이트너스</span>
+    </Link>
   );
 }
 
 export function SidebarNav() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const tab = searchParams.get("tab");
   return (
     <aside className="sticky top-0 hidden h-screen w-60 flex-none flex-col border-r border-[var(--border)] bg-[var(--surface)] md:flex">
       <div className="flex h-16 flex-none items-center bg-[var(--brand)] px-5">
         <Logo />
       </div>
-      <nav className="flex flex-1 flex-col gap-1 px-3 py-5">
-        {NAV_ITEMS.map((item) => {
-          const active = pathname === item.href;
-          return (
-            <NavLink key={item.href} href={item.href} active={active} icon={item.icon}>
-              {item.label}
-            </NavLink>
-          );
-        })}
+      <nav className="flex flex-1 flex-col gap-4 px-3 py-5">
+        {NAV_GROUPS.map((group) => (
+          <div key={group.label}>
+            <div className="flex items-center gap-2 px-3 pb-1.5 text-[12px] font-bold uppercase tracking-wide text-[var(--faint)]">
+              <group.icon className="h-3.5 w-3.5 flex-none" />
+              {group.label}
+            </div>
+            <div className="flex flex-col gap-1">
+              {group.children.map((child) => (
+                <NavLink key={child.href} href={child.href} active={child.match(pathname, tab)}>
+                  {child.label}
+                </NavLink>
+              ))}
+            </div>
+          </div>
+        ))}
       </nav>
       <div className="px-5 pb-5 text-[11px] leading-relaxed text-[var(--faint)]">
         가상 데이터 기반 포트폴리오 데모입니다.
@@ -104,12 +100,10 @@ export function SidebarNav() {
 function NavLink({
   href,
   active,
-  icon: Icon,
   children,
 }: {
   href: string;
   active: boolean;
-  icon: (props: { className?: string }) => ReactNode;
   children: ReactNode;
 }) {
   return (
@@ -122,7 +116,6 @@ function NavLink({
       }`}
     >
       {active && <span className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-full bg-[var(--brand)]" />}
-      <Icon className="h-[18px] w-[18px] flex-none" />
       {children}
     </Link>
   );
@@ -130,23 +123,25 @@ function NavLink({
 
 export function MobileNav() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const tab = searchParams.get("tab");
   return (
     <header className="flex flex-col border-b border-[var(--border)] bg-[var(--surface)] md:hidden">
       <div className="flex h-14 items-center bg-[var(--brand)] px-4">
         <Logo />
       </div>
       <nav className="flex gap-1 overflow-x-auto px-3 py-2">
-        {NAV_ITEMS.map((item) => {
-          const active = pathname === item.href;
+        {NAV_GROUPS.flatMap((group) => group.children).map((child) => {
+          const active = child.match(pathname, tab);
           return (
             <Link
-              key={item.href}
-              href={item.href}
+              key={child.href}
+              href={child.href}
               className={`flex-none rounded-md px-3 py-1.5 text-[13px] font-medium ${
                 active ? "bg-[var(--brand-soft)] text-[var(--brand-hover)]" : "text-[var(--muted)]"
               }`}
             >
-              {item.label}
+              {child.label}
             </Link>
           );
         })}

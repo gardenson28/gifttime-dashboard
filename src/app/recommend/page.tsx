@@ -7,19 +7,6 @@ import { downloadProposalDocx } from "@/lib/generateProposal";
 import { buildRecommendations } from "@/lib/recommend";
 import { useStore } from "@/lib/store";
 
-function downloadCsv(filename: string, rows: string[][]) {
-  const csv = rows
-    .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
-    .join("\n");
-  const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
 export default function RecommendPage() {
   const { trendResult, surveyAnalysis } = useStore();
   const [generatingProposal, setGeneratingProposal] = useState(false);
@@ -67,23 +54,6 @@ export default function RecommendPage() {
     );
   }
 
-  function exportCsv() {
-    if (!recommendations || !trendResult) return;
-    const rows: string[][] = [
-      ["우선순위", "추천 선물군", "추천 이유", "적합 대상", "예산 적합", "참고 트렌드", "설문 근거"],
-      ...recommendations.map((r) => [
-        String(r.priority),
-        r.giftGroup,
-        r.reason,
-        r.target,
-        r.budgetFit ? "적합" : "예산 초과 가능",
-        r.refTrend.join(" / "),
-        r.refSurvey,
-      ]),
-    ];
-    downloadCsv(`추천리포트_${trendResult.season}.csv`, rows);
-  }
-
   async function exportProposal() {
     if (!recommendations || !trendResult || !surveyAnalysis) return;
     setGeneratingProposal(true);
@@ -96,14 +66,11 @@ export default function RecommendPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-[var(--ink)]">매칭 추천 리포트</h1>
-          <p className="mt-1 text-sm text-[var(--muted)]">
-            "{trendResult.season}" 트렌드 결과와 임직원 설문 분석을 조합한 추천입니다.
-          </p>
-        </div>
-        <PrimaryButton onClick={exportCsv}>CSV로 내보내기</PrimaryButton>
+      <div>
+        <h1 className="text-2xl font-bold text-[var(--ink)]">매칭 추천 리포트</h1>
+        <p className="mt-1 text-sm text-[var(--muted)]">
+          "{trendResult.season}" 트렌드 결과와 임직원 설문 분석을 조합한 추천입니다.
+        </p>
       </div>
 
       <Card>

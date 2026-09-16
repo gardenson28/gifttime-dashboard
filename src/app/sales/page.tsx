@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   CartesianGrid,
   Line,
@@ -40,17 +41,42 @@ async function api<T>(url: string, init?: RequestInit): Promise<T> {
   return data;
 }
 
+type SalesTab = "affiliates" | "activation" | "employees";
+
+function tabFromParam(value: string | null): SalesTab {
+  return value === "activation" || value === "employees" ? value : "affiliates";
+}
+
 export default function SalesPage() {
+  return (
+    <Suspense fallback={null}>
+      <SalesPageInner />
+    </Suspense>
+  );
+}
+
+function SalesPageInner() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [clients, setClients] = useState<SalesClient[]>([]);
   const [selectedClientId, setSelectedClientId] = useState<number | null>(null);
   const [newClientName, setNewClientName] = useState("");
-  const [tab, setTab] = useState<"affiliates" | "activation" | "employees">("affiliates");
+  const [tab, setTab] = useState<SalesTab>(() => tabFromParam(searchParams.get("tab")));
   const [error, setError] = useState<string | null>(null);
   const [loadingClients, setLoadingClients] = useState(true);
 
   useEffect(() => {
     loadClients();
   }, []);
+
+  useEffect(() => {
+    setTab(tabFromParam(searchParams.get("tab")));
+  }, [searchParams]);
+
+  function selectTab(next: SalesTab) {
+    setTab(next);
+    router.replace(`/sales?tab=${next}`, { scroll: false });
+  }
 
   async function loadClients() {
     setLoadingClients(true);
@@ -145,7 +171,7 @@ export default function SalesPage() {
         <>
           <div className="flex gap-2">
             <button
-              onClick={() => setTab("affiliates")}
+              onClick={() => selectTab("affiliates")}
               className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
                 tab === "affiliates" ? "bg-[var(--brand)] text-white" : "bg-[var(--canvas)] text-[var(--muted)]"
               }`}
@@ -153,7 +179,7 @@ export default function SalesPage() {
               ① 계열사 확산
             </button>
             <button
-              onClick={() => setTab("activation")}
+              onClick={() => selectTab("activation")}
               className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
                 tab === "activation" ? "bg-[var(--brand)] text-white" : "bg-[var(--canvas)] text-[var(--muted)]"
               }`}
@@ -161,7 +187,7 @@ export default function SalesPage() {
               ② 활성률 리포트
             </button>
             <button
-              onClick={() => setTab("employees")}
+              onClick={() => selectTab("employees")}
               className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
                 tab === "employees" ? "bg-[var(--brand)] text-white" : "bg-[var(--canvas)] text-[var(--muted)]"
               }`}
