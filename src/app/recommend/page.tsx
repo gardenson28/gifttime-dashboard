@@ -1,15 +1,41 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Badge, Card, EmptyNotice, PrimaryButton, SectionTitle } from "@/components/ui";
 import { downloadProposalDocx } from "@/lib/generateProposal";
 import { buildRecommendations } from "@/lib/recommend";
 import { useStore } from "@/lib/store";
+import type { SalesClient } from "@/lib/types";
+
+const inputClass =
+  "rounded-lg border border-[var(--border)] px-3 py-2 text-sm outline-none transition focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand-soft)]";
 
 export default function RecommendPage() {
   const { trendResult, surveyAnalysis } = useStore();
   const [generatingProposal, setGeneratingProposal] = useState(false);
+  const [clients, setClients] = useState<SalesClient[]>([]);
+  const [selectedClientId, setSelectedClientId] = useState<number | "">("");
+  const [headcount, setHeadcount] = useState<number>(surveyAnalysis?.total ?? 0);
+
+  useEffect(() => {
+    fetch("/api/sales/clients")
+      .then((res) => res.json())
+      .then((data) => setClients(data.clients ?? []))
+      .catch(() => setClients([]));
+  }, []);
+
+  useEffect(() => {
+    if (!selectedClientId) return;
+    fetch(`/api/sales/employees?clientId=${selectedClientId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.employees?.length > 0) setHeadcount(data.employees.length);
+      })
+      .catch(() => {});
+  }, [selectedClientId]);
+
+  const selectedClient = clients.find((c) => c.id === selectedClientId) ?? null;
 
   const recommendations = useMemo(() => {
     if (!trendResult || !surveyAnalysis) return null;
@@ -58,7 +84,10 @@ export default function RecommendPage() {
     if (!recommendations || !trendResult || !surveyAnalysis) return;
     setGeneratingProposal(true);
     try {
-      await downloadProposalDocx(trendResult, surveyAnalysis, recommendations);
+      await downloadProposalDocx(trendResult, surveyAnalysis, recommendations, {
+        clientName: selectedClient?.name,
+        headcount: headcount || surveyAnalysis.total,
+      });
     } finally {
       setGeneratingProposal(false);
     }
@@ -137,6 +166,40 @@ export default function RecommendPage() {
           <li>연령대/부서 데이터가 제한적인 경우 특정 그룹에 편향된 결과일 수 있습니다.</li>
           <li>고객사 요청 예산과 최종 견적은 별도로 확인이 필요합니다.</li>
         </ul>
+      </Card>
+
+      <Card>
+        <SectionTitle
+          title="제안서 수신 정보"
+          subtitle="수신 고객사와 대상 인원수를 지정하면 제안서에 예상 예산이 함께 계산되어 들어갑니다."
+        />
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div>
+            <label className="mb-1 block text-sm font-medium text-[var(--muted)]">수신 고객사 (선택)</label>
+            <select
+              className={`w-full ${inputClass}`}
+              value={selectedClientId}
+              onChange={(e) => setSelectedClientId(e.target.value ? Number(e.target.value) : "")}
+            >
+              <option value="">지정 안 함</option>
+              {clients.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-[var(--muted)]">대상 인원수</label>
+            <input
+              type="number"
+              min={1}
+              className={`w-full ${inputClass}`}
+              value={headcount}
+              onChange={(e) => setHeadcount(Number(e.target.value) || 0)}
+            />
+          </div>
+        </div>
       </Card>
 
       <div className="flex flex-col items-center gap-2 pt-2">
