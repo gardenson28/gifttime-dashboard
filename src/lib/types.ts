@@ -104,6 +104,7 @@ export type SalesEmployee = {
   department: string | null;
   quarter: string;
   usage_amount: number;
+  allocated_points: number;
   created_at: string;
 };
 

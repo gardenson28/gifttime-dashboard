@@ -4,6 +4,7 @@ import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   CartesianGrid,
+  Legend,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -23,6 +24,8 @@ import {
 
 const inputClass =
   "rounded-lg border border-[var(--border)] px-3 py-2 text-sm outline-none transition focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand-soft)]";
+
+const CHART_COLORS = ["#FC6C2C", "#2563EB", "#16A463", "#A855F7", "#EE4D67"];
 
 function statusTone(status: AffiliateStatus): "default" | "brand" | "positive" | "negative" {
   if (status === "계약완료") return "positive";
@@ -391,9 +394,6 @@ function ActivationPanel({ client }: { client: SalesClient }) {
   const [quarter, setQuarter] = useState("");
   const [targetCount, setTargetCount] = useState("");
   const [orderCount, setOrderCount] = useState("");
-  const [reasonUnknown, setReasonUnknown] = useState("");
-  const [reasonNothing, setReasonNothing] = useState("");
-  const [reasonDistrust, setReasonDistrust] = useState("");
 
   useEffect(() => {
     load();
@@ -427,9 +427,6 @@ function ActivationPanel({ client }: { client: SalesClient }) {
           quarter,
           targetCount: Number(targetCount),
           orderCount: Number(orderCount),
-          reasonUnknown: reasonUnknown ? Number(reasonUnknown) : 0,
-          reasonNothingToBuy: reasonNothing ? Number(reasonNothing) : 0,
-          reasonDistrust: reasonDistrust ? Number(reasonDistrust) : 0,
         }),
       });
       setReports((prev) => [...prev, report]);
@@ -437,9 +434,6 @@ function ActivationPanel({ client }: { client: SalesClient }) {
       setQuarter("");
       setTargetCount("");
       setOrderCount("");
-      setReasonUnknown("");
-      setReasonNothing("");
-      setReasonDistrust("");
     } catch (e) {
       setError(e instanceof Error ? e.message : "추가에 실패했습니다.");
     }
@@ -455,13 +449,20 @@ function ActivationPanel({ client }: { client: SalesClient }) {
     }
   }
 
+  const countries = useMemo(() => Array.from(new Set(reports.map((r) => r.country))), [reports]);
+  const quarters = useMemo(() => Array.from(new Set(reports.map((r) => r.quarter))).sort(), [reports]);
+
   const chartData = useMemo(
     () =>
-      reports.map((r) => ({
-        label: `${r.quarter} ${r.country}`,
-        rate: r.target_count > 0 ? Math.round((r.order_count / r.target_count) * 1000) / 10 : 0,
-      })),
-    [reports]
+      quarters.map((q) => {
+        const row: Record<string, string | number | null> = { quarter: q };
+        countries.forEach((c) => {
+          const rep = reports.find((r) => r.quarter === q && r.country === c);
+          row[c] = rep && rep.target_count > 0 ? Math.round((rep.order_count / rep.target_count) * 1000) / 10 : null;
+        });
+        return row;
+      }),
+    [reports, quarters, countries]
   );
 
   return (
@@ -493,27 +494,6 @@ function ActivationPanel({ client }: { client: SalesClient }) {
           value={orderCount}
           onChange={(e) => setOrderCount(e.target.value)}
         />
-        <input
-          className={`${inputClass} w-20`}
-          placeholder="모른다"
-          type="number"
-          value={reasonUnknown}
-          onChange={(e) => setReasonUnknown(e.target.value)}
-        />
-        <input
-          className={`${inputClass} w-20`}
-          placeholder="살게없다"
-          type="number"
-          value={reasonNothing}
-          onChange={(e) => setReasonNothing(e.target.value)}
-        />
-        <input
-          className={`${inputClass} w-20`}
-          placeholder="못믿는다"
-          type="number"
-          value={reasonDistrust}
-          onChange={(e) => setReasonDistrust(e.target.value)}
-        />
         <PrimaryButton onClick={handleAdd}>추가</PrimaryButton>
       </div>
 
@@ -530,19 +510,31 @@ function ActivationPanel({ client }: { client: SalesClient }) {
       ) : (
         <>
           <div className="mb-6">
-            <ResponsiveContainer width="100%" height={220}>
+            <ResponsiveContainer width="100%" height={240}>
               <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e6ea" />
-                <XAxis dataKey="label" tick={{ fontSize: 11 }} />
+                <XAxis dataKey="quarter" tick={{ fontSize: 11 }} />
                 <YAxis tick={{ fontSize: 11 }} unit="%" />
                 <Tooltip />
-                <Line type="monotone" dataKey="rate" name="활성률(%)" stroke="#FC6C2C" strokeWidth={2} dot />
+                <Legend />
+                {countries.map((c, idx) => (
+                  <Line
+                    key={c}
+                    type="monotone"
+                    dataKey={c}
+                    name={c}
+                    stroke={CHART_COLORS[idx % CHART_COLORS.length]}
+                    strokeWidth={2}
+                    dot
+                    connectNulls
+                  />
+                ))}
               </LineChart>
             </ResponsiveContainer>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[640px] text-left text-sm">
+            <table className="w-full min-w-[560px] text-left text-sm">
               <thead className="text-[var(--muted)]">
                 <tr>
                   <th className="pb-2 pr-4">국가</th>
@@ -550,7 +542,6 @@ function ActivationPanel({ client }: { client: SalesClient }) {
                   <th className="pb-2 pr-4">대상자</th>
                   <th className="pb-2 pr-4">주문자</th>
                   <th className="pb-2 pr-4">활성률</th>
-                  <th className="pb-2 pr-4">미주문 사유(모름/없음/불신)</th>
                   <th className="pb-2"></th>
                 </tr>
               </thead>
@@ -563,9 +554,6 @@ function ActivationPanel({ client }: { client: SalesClient }) {
                     <td className="py-2 pr-4">{r.order_count}</td>
                     <td className="py-2 pr-4 font-semibold text-[var(--brand-hover)]">
                       {r.target_count > 0 ? Math.round((r.order_count / r.target_count) * 1000) / 10 : 0}%
-                    </td>
-                    <td className="py-2 pr-4 text-[var(--muted)]">
-                      {r.reason_unknown}/{r.reason_nothing_to_buy}/{r.reason_distrust}
                     </td>
                     <td className="py-2">
                       <button onClick={() => handleDelete(r.id)} className="text-xs text-[var(--negative)] underline">
@@ -591,6 +579,7 @@ function EmployeesPanel({ client }: { client: SalesClient }) {
   const [department, setDepartment] = useState("");
   const [quarter, setQuarter] = useState("");
   const [usageAmount, setUsageAmount] = useState("");
+  const [allocatedPoints, setAllocatedPoints] = useState("300000");
 
   useEffect(() => {
     load();
@@ -624,6 +613,7 @@ function EmployeesPanel({ client }: { client: SalesClient }) {
           department,
           quarter,
           usageAmount: usageAmount ? Number(usageAmount) : 0,
+          allocatedPoints: allocatedPoints ? Number(allocatedPoints) : 300000,
         }),
       });
       setEmployees((prev) => [...prev, employee]);
@@ -647,7 +637,13 @@ function EmployeesPanel({ client }: { client: SalesClient }) {
 
   const activeCount = useMemo(() => employees.filter((e) => e.usage_amount > 0).length, [employees]);
   const totalUsage = useMemo(() => employees.reduce((sum, e) => sum + e.usage_amount, 0), [employees]);
+  const totalAllocated = useMemo(() => employees.reduce((sum, e) => sum + e.allocated_points, 0), [employees]);
   const avgUsage = employees.length > 0 ? Math.round(totalUsage / employees.length) : 0;
+  const avgUsageRate = totalAllocated > 0 ? Math.round((totalUsage / totalAllocated) * 1000) / 10 : 0;
+
+  function usageRate(emp: SalesEmployee): number | null {
+    return emp.allocated_points > 0 ? Math.round((emp.usage_amount / emp.allocated_points) * 1000) / 10 : null;
+  }
 
   return (
     <Card>
@@ -682,6 +678,13 @@ function EmployeesPanel({ client }: { client: SalesClient }) {
           value={usageAmount}
           onChange={(e) => setUsageAmount(e.target.value)}
         />
+        <input
+          className={`${inputClass} w-32`}
+          placeholder="지급 포인트(원)"
+          type="number"
+          value={allocatedPoints}
+          onChange={(e) => setAllocatedPoints(e.target.value)}
+        />
         <PrimaryButton onClick={handleAdd}>추가</PrimaryButton>
       </div>
 
@@ -697,7 +700,7 @@ function EmployeesPanel({ client }: { client: SalesClient }) {
         <EmptyNotice>등록된 임직원 데이터가 없습니다.</EmptyNotice>
       ) : (
         <>
-          <div className="mb-4 grid grid-cols-3 gap-3 text-sm">
+          <div className="mb-4 grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
             <div className="rounded-lg bg-[var(--canvas)] p-3">
               <p className="text-[var(--muted)]">전체 인원</p>
               <p className="text-lg font-bold text-[var(--ink)]">{employees.length}명</p>
@@ -712,39 +715,52 @@ function EmployeesPanel({ client }: { client: SalesClient }) {
               <p className="text-[var(--muted)]">1인당 평균 사용액</p>
               <p className="text-lg font-bold text-[var(--ink)]">{avgUsage.toLocaleString()}원</p>
             </div>
+            <div className="rounded-lg bg-[var(--canvas)] p-3">
+              <p className="text-[var(--muted)]">지급 포인트 대비 사용률</p>
+              <p className="text-lg font-bold text-[var(--brand-hover)]">{avgUsageRate}%</p>
+            </div>
           </div>
 
           <div className="max-h-[420px] overflow-y-auto overflow-x-auto">
-            <table className="w-full min-w-[480px] text-left text-sm">
+            <table className="w-full min-w-[640px] text-left text-sm">
               <thead className="sticky top-0 bg-[var(--surface)] text-[var(--muted)]">
                 <tr>
                   <th className="pb-2 pr-4">사번</th>
                   <th className="pb-2 pr-4">부서</th>
                   <th className="pb-2 pr-4">분기</th>
+                  <th className="pb-2 pr-4">지급 포인트</th>
                   <th className="pb-2 pr-4">사용금액</th>
+                  <th className="pb-2 pr-4">사용률</th>
                   <th className="pb-2 pr-4">상태</th>
                   <th className="pb-2"></th>
                 </tr>
               </thead>
               <tbody>
-                {employees.map((emp) => (
-                  <tr key={emp.id} className="border-t border-[var(--border)]">
-                    <td className="py-2 pr-4 font-medium text-[var(--ink)]">{emp.employee_code}</td>
-                    <td className="py-2 pr-4">{emp.department || "-"}</td>
-                    <td className="py-2 pr-4">{emp.quarter}</td>
-                    <td className="py-2 pr-4">{emp.usage_amount.toLocaleString()}원</td>
-                    <td className="py-2 pr-4">
-                      <Badge tone={emp.usage_amount > 0 ? "positive" : "default"}>
-                        {emp.usage_amount > 0 ? "활성" : "미사용"}
-                      </Badge>
-                    </td>
-                    <td className="py-2">
-                      <button onClick={() => handleDelete(emp.id)} className="text-xs text-[var(--negative)] underline">
-                        삭제
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {employees.map((emp) => {
+                  const rate = usageRate(emp);
+                  return (
+                    <tr key={emp.id} className="border-t border-[var(--border)]">
+                      <td className="py-2 pr-4 font-medium text-[var(--ink)]">{emp.employee_code}</td>
+                      <td className="py-2 pr-4">{emp.department || "-"}</td>
+                      <td className="py-2 pr-4">{emp.quarter}</td>
+                      <td className="py-2 pr-4">{emp.allocated_points.toLocaleString()}원</td>
+                      <td className="py-2 pr-4">{emp.usage_amount.toLocaleString()}원</td>
+                      <td className="py-2 pr-4 font-semibold text-[var(--brand-hover)]">
+                        {rate !== null ? `${rate}%` : "-"}
+                      </td>
+                      <td className="py-2 pr-4">
+                        <Badge tone={emp.usage_amount > 0 ? "positive" : "default"}>
+                          {emp.usage_amount > 0 ? "활성" : "미사용"}
+                        </Badge>
+                      </td>
+                      <td className="py-2">
+                        <button onClick={() => handleDelete(emp.id)} className="text-xs text-[var(--negative)] underline">
+                          삭제
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

@@ -42,6 +42,7 @@ STATUS_WEIGHTS = [("미접촉", 4), ("제안중", 3), ("계약완료", 2), ("보
 COUNTRIES = ["베트남", "인도네시아", "중국", "미국", "인도"]
 QUARTERS = ["2026-Q1", "2026-Q2"]
 DEPARTMENTS = ["국내영업1팀", "국내영업2팀", "해외영업팀", "마케팅팀", "경영지원팀", "구매팀"]
+EMPLOYEE_ALLOCATED_POINTS = 300000  # 분기별 지급 포인트(원), 전사 공통
 
 
 def weighted_status():
@@ -108,11 +109,11 @@ def main():
             code = f"{company_name[:2]}-EMP{i:03d}"
             dept = random.choice(DEPARTMENTS)
             is_active = random.random() > 0.35  # 약 35%는 미사용(비활성)
-            usage = random.randint(10, 300) * 1000 if is_active else 0
+            usage = random.randint(10, EMPLOYEE_ALLOCATED_POINTS // 1000) * 1000 if is_active else 0
             cur.execute(
-                """INSERT INTO sales_employees (client_id, employee_code, department, quarter, usage_amount)
-                   VALUES (%s, %s, %s, %s, %s)""",
-                (client_id, code, dept, QUARTERS[-1], usage),
+                """INSERT INTO sales_employees (client_id, employee_code, department, quarter, usage_amount, allocated_points)
+                   VALUES (%s, %s, %s, %s, %s, %s)""",
+                (client_id, code, dept, QUARTERS[-1], usage, EMPLOYEE_ALLOCATED_POINTS),
             )
 
     cur.execute("SELECT count(*) FROM sales_clients")

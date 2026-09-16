@@ -76,8 +76,8 @@ export function SidebarNav() {
       <nav className="flex flex-1 flex-col gap-4 px-3 py-5">
         {NAV_GROUPS.map((group) => (
           <div key={group.label}>
-            <div className="flex items-center gap-2 px-3 pb-1.5 text-[12px] font-bold uppercase tracking-wide text-[var(--faint)]">
-              <group.icon className="h-3.5 w-3.5 flex-none" />
+            <div className="flex items-center gap-2 px-3 pb-2 text-[15px] font-extrabold tracking-tight text-[var(--ink)]">
+              <group.icon className="h-4 w-4 flex-none text-[var(--brand)]" />
               {group.label}
             </div>
             <div className="flex flex-col gap-1">
