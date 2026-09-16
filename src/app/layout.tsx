@@ -40,9 +40,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 md:px-10 md:py-10">
                 {children}
               </main>
-              <footer className="border-t border-[var(--border)] py-4 text-center text-xs text-[var(--faint)]">
-                이트너스 · 포트폴리오 데모 프로젝트 (가상 데이터 사용)
-              </footer>
             </div>
           </div>
         </StoreProvider>

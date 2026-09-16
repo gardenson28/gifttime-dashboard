@@ -90,9 +90,6 @@ export function SidebarNav() {
           </div>
         ))}
       </nav>
-      <div className="px-5 pb-5 text-[11px] leading-relaxed text-[var(--faint)]">
-        가상 데이터 기반 포트폴리오 데모입니다.
-      </div>
     </aside>
   );
 }
