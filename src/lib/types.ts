@@ -102,22 +102,9 @@ export type SalesEmployee = {
   client_id: number;
   employee_code: string;
   department: string | null;
+  country: string | null;
   quarter: string;
   usage_amount: number;
   allocated_points: number;
-  created_at: string;
-};
-
-export type ActivationReport = {
-  id: number;
-  client_id: number;
-  country: string;
-  quarter: string;
-  target_count: number;
-  order_count: number;
-  reason_unknown: number;
-  reason_nothing_to_buy: number;
-  reason_distrust: number;
-  memo: string | null;
   created_at: string;
 };

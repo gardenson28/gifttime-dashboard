@@ -2,20 +2,9 @@
 
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
 import { Badge, Card, EmptyNotice, ErrorNotice, PrimaryButton, SecondaryButton, SectionTitle } from "@/components/ui";
 import {
   AFFILIATE_STATUS_OPTIONS,
-  type ActivationReport,
   type AffiliateStatus,
   type SalesAffiliate,
   type SalesClient,
@@ -24,8 +13,6 @@ import {
 
 const inputClass =
   "rounded-lg border border-[var(--border)] px-3 py-2 text-sm outline-none transition focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand-soft)]";
-
-const CHART_COLORS = ["#FC6C2C", "#2563EB", "#16A463", "#A855F7", "#EE4D67"];
 
 function statusTone(status: AffiliateStatus): "default" | "brand" | "positive" | "negative" {
   if (status === "계약완료") return "positive";
@@ -44,10 +31,10 @@ async function api<T>(url: string, init?: RequestInit): Promise<T> {
   return data;
 }
 
-type SalesTab = "affiliates" | "activation" | "employees";
+type SalesTab = "affiliates" | "employees";
 
 function tabFromParam(value: string | null): SalesTab {
-  return value === "activation" || value === "employees" ? value : "affiliates";
+  return value === "employees" ? value : "affiliates";
 }
 
 export default function SalesPage() {
@@ -119,7 +106,7 @@ function SalesPageInner() {
       <div>
         <h1 className="text-2xl font-bold text-[var(--ink)]">영업 관리</h1>
         <p className="mt-1 text-sm text-[var(--muted)]">
-          새 고객사 없이도 매출을 올리는 두 가지 방법 — 계열사 확산과 활성률 개선을 고객사별로 관리합니다.
+          새 고객사 없이도 매출을 올리는 두 가지 방법 — 계열사 확산과 임직원 포인트 사용 현황을 고객사별로 관리합니다.
         </p>
       </div>
 
@@ -182,27 +169,17 @@ function SalesPageInner() {
               ① 계열사 확산
             </button>
             <button
-              onClick={() => selectTab("activation")}
-              className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
-                tab === "activation" ? "bg-[var(--brand)] text-white" : "bg-[var(--canvas)] text-[var(--muted)]"
-              }`}
-            >
-              ② 활성률 리포트
-            </button>
-            <button
               onClick={() => selectTab("employees")}
               className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
                 tab === "employees" ? "bg-[var(--brand)] text-white" : "bg-[var(--canvas)] text-[var(--muted)]"
               }`}
             >
-              ③ 임직원 사용 현황
+              ② 임직원 포인트 사용 현황
             </button>
           </div>
 
           {tab === "affiliates" ? (
             <AffiliatesPanel client={selectedClient} />
-          ) : tab === "activation" ? (
-            <ActivationPanel client={selectedClient} />
           ) : (
             <EmployeesPanel client={selectedClient} />
           )}
@@ -386,197 +363,13 @@ function AffiliatesPanel({ client }: { client: SalesClient }) {
   );
 }
 
-function ActivationPanel({ client }: { client: SalesClient }) {
-  const [reports, setReports] = useState<ActivationReport[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [country, setCountry] = useState("");
-  const [quarter, setQuarter] = useState("");
-  const [targetCount, setTargetCount] = useState("");
-  const [orderCount, setOrderCount] = useState("");
-
-  useEffect(() => {
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [client.id]);
-
-  async function load() {
-    setLoading(true);
-    setError(null);
-    try {
-      const { reports } = await api<{ reports: ActivationReport[] }>(
-        `/api/sales/activation?clientId=${client.id}`
-      );
-      setReports(reports);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "불러오기에 실패했습니다.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function handleAdd() {
-    if (!country.trim() || !quarter.trim() || !targetCount || !orderCount) return;
-    setError(null);
-    try {
-      const { report } = await api<{ report: ActivationReport }>("/api/sales/activation", {
-        method: "POST",
-        body: JSON.stringify({
-          clientId: client.id,
-          country,
-          quarter,
-          targetCount: Number(targetCount),
-          orderCount: Number(orderCount),
-        }),
-      });
-      setReports((prev) => [...prev, report]);
-      setCountry("");
-      setQuarter("");
-      setTargetCount("");
-      setOrderCount("");
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "추가에 실패했습니다.");
-    }
-  }
-
-  async function handleDelete(id: number) {
-    setReports((prev) => prev.filter((r) => r.id !== id));
-    try {
-      await api(`/api/sales/activation?id=${id}`, { method: "DELETE" });
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "삭제에 실패했습니다.");
-      load();
-    }
-  }
-
-  const countries = useMemo(() => Array.from(new Set(reports.map((r) => r.country))), [reports]);
-  const quarters = useMemo(() => Array.from(new Set(reports.map((r) => r.quarter))).sort(), [reports]);
-
-  const chartData = useMemo(
-    () =>
-      quarters.map((q) => {
-        const row: Record<string, string | number | null> = { quarter: q };
-        countries.forEach((c) => {
-          const rep = reports.find((r) => r.quarter === q && r.country === c);
-          row[c] = rep && rep.target_count > 0 ? Math.round((rep.order_count / rep.target_count) * 1000) / 10 : null;
-        });
-        return row;
-      }),
-    [reports, quarters, countries]
-  );
-
-  return (
-    <Card>
-      <SectionTitle
-        title={`${client.name}의 분기별 활성률`}
-        subtitle="대상자 → 주문자 → 활성률을 국가·분기별로 기록합니다."
-      />
-
-      <div className="mb-4 flex flex-wrap items-end gap-2 rounded-lg border border-dashed border-[var(--border)] p-3">
-        <input className={`${inputClass} w-28`} placeholder="국가" value={country} onChange={(e) => setCountry(e.target.value)} />
-        <input
-          className={`${inputClass} w-28`}
-          placeholder="분기 (예: 2026-Q3)"
-          value={quarter}
-          onChange={(e) => setQuarter(e.target.value)}
-        />
-        <input
-          className={`${inputClass} w-24`}
-          placeholder="대상자 수"
-          type="number"
-          value={targetCount}
-          onChange={(e) => setTargetCount(e.target.value)}
-        />
-        <input
-          className={`${inputClass} w-24`}
-          placeholder="주문자 수"
-          type="number"
-          value={orderCount}
-          onChange={(e) => setOrderCount(e.target.value)}
-        />
-        <PrimaryButton onClick={handleAdd}>추가</PrimaryButton>
-      </div>
-
-      {error && (
-        <div className="mb-3">
-          <ErrorNotice>{error}</ErrorNotice>
-        </div>
-      )}
-
-      {loading ? (
-        <p className="text-sm text-[var(--muted)]">불러오는 중...</p>
-      ) : reports.length === 0 ? (
-        <EmptyNotice>등록된 분기 리포트가 없습니다.</EmptyNotice>
-      ) : (
-        <>
-          <div className="mb-6">
-            <ResponsiveContainer width="100%" height={240}>
-              <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e6ea" />
-                <XAxis dataKey="quarter" tick={{ fontSize: 11 }} />
-                <YAxis tick={{ fontSize: 11 }} unit="%" />
-                <Tooltip />
-                <Legend />
-                {countries.map((c, idx) => (
-                  <Line
-                    key={c}
-                    type="monotone"
-                    dataKey={c}
-                    name={c}
-                    stroke={CHART_COLORS[idx % CHART_COLORS.length]}
-                    strokeWidth={2}
-                    dot
-                    connectNulls
-                  />
-                ))}
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[560px] text-left text-sm">
-              <thead className="text-[var(--muted)]">
-                <tr>
-                  <th className="pb-2 pr-4">국가</th>
-                  <th className="pb-2 pr-4">분기</th>
-                  <th className="pb-2 pr-4">대상자</th>
-                  <th className="pb-2 pr-4">주문자</th>
-                  <th className="pb-2 pr-4">활성률</th>
-                  <th className="pb-2"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {reports.map((r) => (
-                  <tr key={r.id} className="border-t border-[var(--border)]">
-                    <td className="py-2 pr-4">{r.country}</td>
-                    <td className="py-2 pr-4">{r.quarter}</td>
-                    <td className="py-2 pr-4">{r.target_count}</td>
-                    <td className="py-2 pr-4">{r.order_count}</td>
-                    <td className="py-2 pr-4 font-semibold text-[var(--brand-hover)]">
-                      {r.target_count > 0 ? Math.round((r.order_count / r.target_count) * 1000) / 10 : 0}%
-                    </td>
-                    <td className="py-2">
-                      <button onClick={() => handleDelete(r.id)} className="text-xs text-[var(--negative)] underline">
-                        삭제
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </>
-      )}
-    </Card>
-  );
-}
-
 function EmployeesPanel({ client }: { client: SalesClient }) {
   const [employees, setEmployees] = useState<SalesEmployee[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [employeeCode, setEmployeeCode] = useState("");
   const [department, setDepartment] = useState("");
+  const [country, setCountry] = useState("");
   const [quarter, setQuarter] = useState("");
   const [usageAmount, setUsageAmount] = useState("");
   const [allocatedPoints, setAllocatedPoints] = useState("300000");
@@ -611,6 +404,7 @@ function EmployeesPanel({ client }: { client: SalesClient }) {
           clientId: client.id,
           employeeCode,
           department,
+          country,
           quarter,
           usageAmount: usageAmount ? Number(usageAmount) : 0,
           allocatedPoints: allocatedPoints ? Number(allocatedPoints) : 300000,
@@ -619,6 +413,7 @@ function EmployeesPanel({ client }: { client: SalesClient }) {
       setEmployees((prev) => [...prev, employee]);
       setEmployeeCode("");
       setDepartment("");
+      setCountry("");
       setUsageAmount("");
     } catch (e) {
       setError(e instanceof Error ? e.message : "추가에 실패했습니다.");
@@ -645,11 +440,31 @@ function EmployeesPanel({ client }: { client: SalesClient }) {
     return emp.allocated_points > 0 ? Math.round((emp.usage_amount / emp.allocated_points) * 1000) / 10 : null;
   }
 
+  const countryStats = useMemo(() => {
+    const groups = new Map<string, SalesEmployee[]>();
+    employees.forEach((emp) => {
+      const key = emp.country || "미지정";
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key)!.push(emp);
+    });
+    return Array.from(groups.entries()).map(([country, emps]) => {
+      const active = emps.filter((e) => e.usage_amount > 0).length;
+      const usage = emps.reduce((sum, e) => sum + e.usage_amount, 0);
+      const allocated = emps.reduce((sum, e) => sum + e.allocated_points, 0);
+      return {
+        country,
+        count: emps.length,
+        active,
+        rate: allocated > 0 ? Math.round((usage / allocated) * 1000) / 10 : 0,
+      };
+    });
+  }, [employees]);
+
   return (
     <Card>
       <SectionTitle
-        title={`${client.name}의 임직원 몰 사용 현황`}
-        subtitle="임직원 개인별 몰 사용 금액을 기록해 활성률의 근거 데이터로 활용합니다."
+        title={`${client.name}의 임직원 포인트 사용 현황`}
+        subtitle="임직원 개인별 포인트 사용 금액을 국가·부서별로 기록합니다."
       />
 
       <div className="mb-4 flex flex-wrap items-end gap-2 rounded-lg border border-dashed border-[var(--border)] p-3">
@@ -664,6 +479,12 @@ function EmployeesPanel({ client }: { client: SalesClient }) {
           placeholder="부서"
           value={department}
           onChange={(e) => setDepartment(e.target.value)}
+        />
+        <input
+          className={`${inputClass} w-28`}
+          placeholder="국가"
+          value={country}
+          onChange={(e) => setCountry(e.target.value)}
         />
         <input
           className={`${inputClass} w-28`}
@@ -721,12 +542,37 @@ function EmployeesPanel({ client }: { client: SalesClient }) {
             </div>
           </div>
 
+          <p className="mb-2 text-sm font-semibold text-[var(--ink)]">국가별 요약</p>
+          <div className="mb-6 overflow-x-auto">
+            <table className="w-full min-w-[480px] text-left text-sm">
+              <thead className="text-[var(--muted)]">
+                <tr>
+                  <th className="pb-2 pr-4">국가</th>
+                  <th className="pb-2 pr-4">인원</th>
+                  <th className="pb-2 pr-4">활성 인원</th>
+                  <th className="pb-2 pr-4">사용률</th>
+                </tr>
+              </thead>
+              <tbody>
+                {countryStats.map((s) => (
+                  <tr key={s.country} className="border-t border-[var(--border)]">
+                    <td className="py-2 pr-4 font-medium text-[var(--ink)]">{s.country}</td>
+                    <td className="py-2 pr-4">{s.count}명</td>
+                    <td className="py-2 pr-4">{s.active}명</td>
+                    <td className="py-2 pr-4 font-semibold text-[var(--brand-hover)]">{s.rate}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
           <div className="max-h-[420px] overflow-y-auto overflow-x-auto">
-            <table className="w-full min-w-[640px] text-left text-sm">
+            <table className="w-full min-w-[720px] text-left text-sm">
               <thead className="sticky top-0 bg-[var(--surface)] text-[var(--muted)]">
                 <tr>
                   <th className="pb-2 pr-4">사번</th>
                   <th className="pb-2 pr-4">부서</th>
+                  <th className="pb-2 pr-4">국가</th>
                   <th className="pb-2 pr-4">분기</th>
                   <th className="pb-2 pr-4">지급 포인트</th>
                   <th className="pb-2 pr-4">사용금액</th>
@@ -742,6 +588,7 @@ function EmployeesPanel({ client }: { client: SalesClient }) {
                     <tr key={emp.id} className="border-t border-[var(--border)]">
                       <td className="py-2 pr-4 font-medium text-[var(--ink)]">{emp.employee_code}</td>
                       <td className="py-2 pr-4">{emp.department || "-"}</td>
+                      <td className="py-2 pr-4">{emp.country || "-"}</td>
                       <td className="py-2 pr-4">{emp.quarter}</td>
                       <td className="py-2 pr-4">{emp.allocated_points.toLocaleString()}원</td>
                       <td className="py-2 pr-4">{emp.usage_amount.toLocaleString()}원</td>

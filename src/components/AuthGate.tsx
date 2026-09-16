@@ -6,6 +6,7 @@ import { Card, ErrorNotice, PrimaryButton } from "@/components/ui";
 
 export function AuthGate({ children }: { children: ReactNode }) {
   const [unlocked, setUnlocked] = useState(false);
+  const [employeeId, setEmployeeId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -18,7 +19,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
       const res = await fetch("/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ employeeId, password }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -40,14 +41,21 @@ export function AuthGate({ children }: { children: ReactNode }) {
       <div className="w-full max-w-sm">
         <Card>
           <h1 className="text-lg font-bold text-[var(--ink)]">이트너스</h1>
-          <p className="mt-1 text-sm text-[var(--muted)]">이트너스 전용 내부 도구입니다. 비밀번호를 입력해주세요.</p>
+          <p className="mt-1 text-sm text-[var(--muted)]">이트너스 전용 내부 도구입니다. 사번과 비밀번호를 입력해주세요.</p>
           <form onSubmit={handleSubmit} className="mt-5 space-y-3">
+            <input
+              type="text"
+              value={employeeId}
+              onChange={(e) => setEmployeeId(e.target.value)}
+              placeholder="사번"
+              autoFocus
+              className="w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm outline-none transition focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand-soft)]"
+            />
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="비밀번호"
-              autoFocus
               className="w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm outline-none transition focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand-soft)]"
             />
             <PrimaryButton type="submit" disabled={loading} className="w-full">

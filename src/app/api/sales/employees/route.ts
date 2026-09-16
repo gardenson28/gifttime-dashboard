@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
-  const { clientId, employeeCode, department, quarter, usageAmount, allocatedPoints } = body ?? {};
+  const { clientId, employeeCode, department, country, quarter, usageAmount, allocatedPoints } = body ?? {};
   if (!clientId || !employeeCode?.trim() || !quarter?.trim()) {
     return NextResponse.json({ error: "고객사, 사번, 분기는 필수입니다." }, { status: 400 });
   }
@@ -24,6 +24,7 @@ export async function POST(req: NextRequest) {
       client_id: clientId,
       employee_code: employeeCode.trim(),
       department: department || null,
+      country: country || null,
       quarter: quarter.trim(),
       usage_amount: usageAmount || 0,
       allocated_points: allocatedPoints || 300000,

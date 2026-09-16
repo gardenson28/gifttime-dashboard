@@ -22,8 +22,7 @@ const NAV_GROUPS: NavGroup[] = [
     icon: IconBriefcase,
     children: [
       { href: "/sales?tab=affiliates", label: "계열사 확산", match: (p, tab) => p === "/sales" && (tab === null || tab === "affiliates") },
-      { href: "/sales?tab=activation", label: "활성률 리포트", match: (p, tab) => p === "/sales" && tab === "activation" },
-      { href: "/sales?tab=employees", label: "임직원 사용 현황", match: (p, tab) => p === "/sales" && tab === "employees" },
+      { href: "/sales?tab=employees", label: "임직원 포인트 사용 현황", match: (p, tab) => p === "/sales" && tab === "employees" },
     ],
   },
 ];

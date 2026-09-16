@@ -10,7 +10,7 @@ const SECTIONS = [
   {
     href: "/sales?tab=affiliates",
     title: "영업 관리",
-    description: "계열사 확산과 활성률 개선, 임직원 몰 사용 현황을\n고객사별로 관리합니다.",
+    description: "계열사 확산과 임직원 포인트 사용 현황을\n고객사별로 관리합니다.",
   },
 ];
 
