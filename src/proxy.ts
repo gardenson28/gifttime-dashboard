@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const AUTH_COOKIE = "site_auth";
-const PUBLIC_PATHS = ["/login", "/api/login"];
 
 export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  const isPublic =
-    PUBLIC_PATHS.includes(pathname) || pathname.startsWith("/_next") || pathname === "/favicon.ico";
-  if (isPublic) {
+  const isApi = pathname.startsWith("/api/");
+  if (!isApi || pathname === "/api/login") {
     return NextResponse.next();
   }
 
@@ -17,11 +15,9 @@ export function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
-  const loginUrl = new URL("/login", req.url);
-  loginUrl.searchParams.set("next", pathname);
-  return NextResponse.redirect(loginUrl);
+  return NextResponse.json({ error: "인증이 필요합니다." }, { status: 401 });
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image).*)"],
+  matcher: ["/api/:path*"],
 };

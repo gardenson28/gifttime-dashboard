@@ -5,6 +5,7 @@ import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 import "./globals.css";
 import { StoreProvider } from "@/lib/store";
 import { SidebarNav, MobileNav } from "@/components/nav";
+import { AuthGate } from "@/components/AuthGate";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,19 +30,21 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full text-[var(--ink)]">
         <StoreProvider>
-          <div className="flex min-h-screen">
-            <Suspense fallback={null}>
-              <SidebarNav />
-            </Suspense>
-            <div className="flex min-h-screen flex-1 flex-col">
+          <AuthGate>
+            <div className="flex min-h-screen">
               <Suspense fallback={null}>
-                <MobileNav />
+                <SidebarNav />
               </Suspense>
-              <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 md:px-10 md:py-10">
-                {children}
-              </main>
+              <div className="flex min-h-screen flex-1 flex-col">
+                <Suspense fallback={null}>
+                  <MobileNav />
+                </Suspense>
+                <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 md:px-10 md:py-10">
+                  {children}
+                </main>
+              </div>
             </div>
-          </div>
+          </AuthGate>
         </StoreProvider>
       </body>
     </html>

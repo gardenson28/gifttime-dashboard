@@ -5,12 +5,12 @@ const SECTIONS = [
   {
     href: "/research",
     title: "트렌드 선물 제안",
-    description: "시즌·이벤트 트렌드 리서치, 임직원 설문 분석, 매칭 추천까지 고객사 제안용 선물군을 정리합니다.",
+    description: "시즌·이벤트 트렌드 리서치, 임직원 설문 분석, 매칭 추천까지\n고객사 제안용 선물군을 정리합니다.",
   },
   {
     href: "/sales?tab=affiliates",
     title: "영업 관리",
-    description: "계열사 확산과 활성률 개선, 임직원 몰 사용 현황을 고객사별로 관리합니다.",
+    description: "계열사 확산과 활성률 개선, 임직원 몰 사용 현황을\n고객사별로 관리합니다.",
   },
 ];
 
@@ -30,7 +30,7 @@ export default function Home() {
           <Link key={section.href} href={section.href}>
             <Card className="h-full transition hover:border-[var(--brand)]">
               <h2 className="text-lg font-bold text-[var(--ink)]">{section.title}</h2>
-              <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">{section.description}</p>
+              <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-[var(--muted)]">{section.description}</p>
               <p className="mt-4 text-sm font-semibold text-[var(--brand-hover)]">바로가기 →</p>
             </Card>
           </Link>
